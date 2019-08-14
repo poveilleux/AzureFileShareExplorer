@@ -1,3 +1,3 @@
-# AzureFileStorageExplorer
+# AzureFileShareExplorer
 
-Easily explore your Azure File shares with the Azure File Storage Explorer.
+Easily explore your Azure File shares with the Azure File Share Explorer.
