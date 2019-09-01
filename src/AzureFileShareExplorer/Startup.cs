@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AzureFileShareExplorer.Api
+namespace AzureFileShareExplorer
 {
     public class Startup
     {
