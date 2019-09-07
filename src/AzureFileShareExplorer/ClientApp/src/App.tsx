@@ -1,14 +1,12 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
 
 const App: React.FC = () => {
   return (
     <div className="container">
-      <div className="col-12">
-        <header className="App-header">
-          <h1>Azure File Share Explorer</h1>
-        </header>
-      </div>
+      <header className="App-header">
+        <h1>Azure File Share Explorer</h1>
+      </header>
     </div>
   );
 }
