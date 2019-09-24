@@ -20,10 +20,10 @@ const displayElement = (e: TreeElement, onNavigation: (location: string) => void
 }
 
 const App: React.FC = () => {
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState("/");
   const data = getData(location);
 
-  console.log(`Location: ${location}`);
+  console.log(`Location: ${location}`);  
 
   return (
     <div className="container">
@@ -34,7 +34,7 @@ const App: React.FC = () => {
         </div>
       </header>
       <div>
-        {data.map((e) => displayElement(e, (l: string) => setLocation(location + "/" + l)))}
+        {data.map((e) => displayElement(e, (l: string) => setLocation(location + l + "/")))}
       </div>
     </div>
   );
