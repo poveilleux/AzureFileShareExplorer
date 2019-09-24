@@ -1,7 +1,7 @@
 import { TreeElement, ElementType, FolderElement } from "./models/treeElement";
 
-export function getData(): TreeElement[] {
-    return [
+export function getData(location: string): TreeElement[] {
+    let data: TreeElement[] = [
         {
             type: ElementType.Folder,
             name: "Genetec.Identity.Sts",
@@ -12,6 +12,15 @@ export function getData(): TreeElement[] {
             ]
         } as FolderElement
     ];
+
+    const locationSegments = location.split("/").filter(x => x);
+    
+    locationSegments.forEach(s => {
+        const element = data.find(x => x.name === s) as FolderElement;
+        data = element.children;
+    });
+
+    return data;
 }
 
 function generateTestResult(name: string): FolderElement {

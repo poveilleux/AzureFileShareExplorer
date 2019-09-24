@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import { getData } from './mockData';
 import { TreeElement, ElementType } from './models/treeElement';
 
-const displayElement = (e: TreeElement): JSX.Element => {
+const displayElement = (e: TreeElement, onNavigation: (location: string) => void): JSX.Element => {
   const isFolder = e.type === ElementType.Folder;
   let dblClick: (() => void) | undefined = undefined;
   if (isFolder) {
-    dblClick = () => alert("Open folder plz.");
+    dblClick = () => onNavigation(e.name);
+  } else {
+    dblClick = () => alert("plz open file");
   }
 
   return (
@@ -18,15 +20,21 @@ const displayElement = (e: TreeElement): JSX.Element => {
 }
 
 const App: React.FC = () => {
-  const data = getData();
+  const [location, setLocation] = useState("");
+  const data = getData(location);
+
+  console.log(`Location: ${location}`);
 
   return (
     <div className="container">
       <header className="App-header">
         <h1>Azure File Share Explorer</h1>
+        <div className="share-location">
+          {location}
+        </div>
       </header>
       <div>
-        {data.map(displayElement)}
+        {data.map((e) => displayElement(e, (l: string) => setLocation(location + "/" + l)))}
       </div>
     </div>
   );
