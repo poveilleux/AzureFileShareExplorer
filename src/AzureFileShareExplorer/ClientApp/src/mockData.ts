@@ -1,7 +1,7 @@
-import { TreeElement, ElementType, FolderElement } from "./models/treeElement";
+import { TreeElementModel, ElementType, FolderElementModel } from "./models/treeElementModel";
 
-export function getData(location: string): TreeElement[] {
-    let data: TreeElement[] = [
+export function getData(location: string): TreeElementModel[] {
+    let data: TreeElementModel[] = [
         {
             type: ElementType.Folder,
             name: "Genetec.Identity.Sts",
@@ -10,20 +10,20 @@ export function getData(location: string): TreeElement[] {
                 generateTestResult("2019-09-06-00-15-00Z"),
                 generateTestResult("2019-09-06-00-30-00Z")
             ]
-        } as FolderElement
+        } as FolderElementModel
     ];
 
     const locationSegments = location.split("/").filter(x => x);
     
     locationSegments.forEach(s => {
-        const element = data.find(x => x.name === s) as FolderElement;
+        const element = data.find(x => x.name === s) as FolderElementModel;
         data = element.children;
     });
 
     return data;
 }
 
-function generateTestResult(name: string): FolderElement {
+function generateTestResult(name: string): FolderElementModel {
     return {
         type: ElementType.Folder,
         name,
@@ -36,7 +36,7 @@ function generateTestResult(name: string): FolderElement {
                     generateFile("screenshot1.jpg"),
                     generateFile("screenshot2.jpg")
                 ]
-            } as FolderElement,
+            } as FolderElementModel,
             {
                 type: ElementType.Folder,
                 name: "Test #2",
@@ -49,6 +49,6 @@ function generateTestResult(name: string): FolderElement {
     };
 }
 
-function generateFile(name: string): TreeElement {
+function generateFile(name: string): TreeElementModel {
     return { type: ElementType.File, name };
 }
