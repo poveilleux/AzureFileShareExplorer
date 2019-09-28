@@ -14,3 +14,23 @@
         color: #DCB679;
     }
 }
+
+.location-breadcrumb {
+    border: 1px black solid;
+    padding: 0 10px;
+    margin-bottom: 0.5em;
+
+    &::before {
+        // forces the div to have a height
+        content: "\200B";
+    }
+
+    .location-segment {
+        user-select: none;
+
+        &:hover {
+            cursor: default;
+            color: #49A0DB;
+        }
+    }
+}

@@ -8,13 +8,11 @@ const data: TreeElementModel[] = [
     ])
 ];
 
-export function getData(location: string): TreeElementModel[] {
-    const locationSegments = location.split("/").filter(x => x);
-
+export function getData(location: string[]): TreeElementModel[] {
     let currentData = data;
 
-    locationSegments.forEach(s => {
-        const element = currentData.find(x => x.name === s) as FolderElementModel;
+    location.forEach(loc => {
+        const element = currentData.find(x => x.name === loc) as FolderElementModel;
         currentData = element.children;
     });
 
@@ -22,7 +20,6 @@ export function getData(location: string): TreeElementModel[] {
 }
 
 function generateTestResult(name: string): FolderElementModel {
-    console.log("generateTestResult: " + name);
     return new FolderElementModel(name, [
         new FolderElementModel("Test #1", [
             new FileElementModel("logs.txt"),
