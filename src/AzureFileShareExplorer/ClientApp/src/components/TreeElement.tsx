@@ -1,4 +1,5 @@
 import React from 'react';
+import './TreeElement.scss';
 import { TreeElementModel, FileElementModel } from '../models/treeElementModel';
 
 interface TreeElementProps {
