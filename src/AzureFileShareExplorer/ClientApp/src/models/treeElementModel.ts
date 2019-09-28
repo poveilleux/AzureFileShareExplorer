@@ -3,11 +3,22 @@ export enum ElementType {
     Folder = "folder"
 }
 
-export interface TreeElementModel {
-    type: ElementType;
-    name: string;
+export abstract class TreeElementModel {
+    constructor(public type: ElementType, public name: string) { }
+
+    public isFolder() {
+        return this.type === ElementType.Folder;
+    }
 }
 
-export interface FolderElementModel extends TreeElementModel {
-    children: TreeElementModel[];
+export class FolderElementModel extends TreeElementModel {
+    constructor(name: string, public children: TreeElementModel[]) {
+        super(ElementType.Folder, name);
+    }
+}
+
+export class FileElementModel extends TreeElementModel {
+    constructor(name: string) {
+        super(ElementType.File, name);
+    }
 }

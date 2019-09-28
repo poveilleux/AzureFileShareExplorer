@@ -1,54 +1,37 @@
-import { TreeElementModel, ElementType, FolderElementModel } from "./models/treeElementModel";
+import { TreeElementModel, FolderElementModel, FileElementModel } from "./models/treeElementModel";
+
+const data: TreeElementModel[] = [
+    new FolderElementModel("Genetec.Identity.Sts", [
+        generateTestResult("2019-09-06-00-00-00Z"),
+        generateTestResult("2019-09-06-00-15-00Z"),
+        generateTestResult("2019-09-06-00-30-00Z")
+    ])
+];
 
 export function getData(location: string): TreeElementModel[] {
-    let data: TreeElementModel[] = [
-        {
-            type: ElementType.Folder,
-            name: "Genetec.Identity.Sts",
-            children: [
-                generateTestResult("2019-09-06-00-00-00Z"),
-                generateTestResult("2019-09-06-00-15-00Z"),
-                generateTestResult("2019-09-06-00-30-00Z")
-            ]
-        } as FolderElementModel
-    ];
-
     const locationSegments = location.split("/").filter(x => x);
-    
+
+    let currentData = data;
+
     locationSegments.forEach(s => {
-        const element = data.find(x => x.name === s) as FolderElementModel;
-        data = element.children;
+        const element = currentData.find(x => x.name === s) as FolderElementModel;
+        currentData = element.children;
     });
 
-    return data;
+    return currentData;
 }
 
 function generateTestResult(name: string): FolderElementModel {
-    return {
-        type: ElementType.Folder,
-        name,
-        children: [
-            {
-                type: ElementType.Folder,
-                name: "Test #1",
-                children: [
-                    generateFile("logs.txt"),
-                    generateFile("screenshot1.jpg"),
-                    generateFile("screenshot2.jpg")
-                ]
-            } as FolderElementModel,
-            {
-                type: ElementType.Folder,
-                name: "Test #2",
-                children: [
-                    generateFile("junit.xml"),
-                    generateFile("screenshot.png")
-                ]
-            }
-        ]
-    };
-}
-
-function generateFile(name: string): TreeElementModel {
-    return { type: ElementType.File, name };
+    console.log("generateTestResult: " + name);
+    return new FolderElementModel(name, [
+        new FolderElementModel("Test #1", [
+            new FileElementModel("logs.txt"),
+            new FileElementModel("screenshot1.jpg"),
+            new FileElementModel("screenshot2.jpg")
+        ]),
+        new FolderElementModel("Test #2", [
+            new FileElementModel("junit.xml"),
+            new FileElementModel("screenshot.png")
+        ])
+    ]);
 }

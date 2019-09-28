@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import './App.scss';
 import { getData } from './mockData';
 import TreeElement from './components/TreeElement';
-import { TreeElementModel, ElementType } from './models/treeElementModel';
+import { TreeElementModel } from './models/treeElementModel';
 
 const App: React.FC = () => {
     const [location, setLocation] = useState("/");
     const data = getData(location);
 
     function navigate(element: TreeElementModel) {
-        if (element.type === ElementType.Folder) {
+        if (element.isFolder()) {
             setLocation(location + element.name + "/");
         }
     }
@@ -23,7 +23,7 @@ const App: React.FC = () => {
                 </div>
             </header>
             <div>
-                {data.map((e) => <TreeElement element={e} onDoubleClick={navigate} />)}
+                {data.map((e) => <TreeElement key={e.name + e.type} element={e} onDoubleClick={navigate} />)}
             </div>
         </div>
     );

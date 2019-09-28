@@ -9,8 +9,10 @@ interface TreeElementProps {
 function getIcon(element: TreeElementModel): JSX.Element {
     if (element.type === ElementType.Folder) {
         return <i className="fas fa-folder" />;
+    } else if (element.name.endsWith(".png")) {
+        return <i className="fas fa-file-image" />;
     }
-
+    
     return <i className="fas fa-file" />;
 }
 
