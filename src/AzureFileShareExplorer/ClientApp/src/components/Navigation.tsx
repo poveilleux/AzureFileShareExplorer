@@ -11,14 +11,19 @@ const Navigation: React.SFC<NavigationProps> = (props) => {
     };
 
     return (
-        <div className="location-breadcrumb">
-            {
-                props.location.length
-                    ? props.location
-                        .map<React.ReactNode>((l, i) => <span key={l} className="location-segment" onClick={() => onClick(i)}>{l}</span>)
-                        .reduce((prev, curr) => [prev, <span>  >  </span>, curr])
-                    : null
-            }
+        <div className="d-flex flex-row navigation-bar">
+            <div className="navigation-controls">
+                <i className="fas fa-long-arrow-alt-up" />
+            </div>
+            <div className="flex-fill location-breadcrumb">
+                {
+                    props.location.length
+                        ? props.location
+                            .map<React.ReactNode>((l, i) => <span key={l} className="location-segment" onClick={() => onClick(i)}>{l}</span>)
+                            .reduce((prev, curr) => [prev, <span>  >  </span>, curr])
+                        : null
+                }
+            </div>
         </div>
     );
 };
