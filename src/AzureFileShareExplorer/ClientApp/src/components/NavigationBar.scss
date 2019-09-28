@@ -1,0 +1,38 @@
+.navigation-bar {
+  .navigation-controls {
+    padding: 0 0.25em;
+
+    & > i {
+      border: 1px solid transparent;
+      padding: 0.25em 0.5em;
+
+      &.disabled {
+        color: #6F7172;
+      }
+
+      &:not(.disabled):hover {
+        border: 1px solid black;
+        background-color: #c9def5;
+      }
+    }
+  }
+
+  .location-breadcrumb {
+    border: 1px solid black;
+    padding: 0 0.5em;
+    margin-bottom: 0.5em;
+    user-select: none;
+
+    &::before {
+      // forces the div to have a height
+      content: "\200B";
+    }
+
+    .location-segment {
+      &:hover {
+        cursor: default;
+        color: #49a0db;
+      }
+    }
+  }
+}

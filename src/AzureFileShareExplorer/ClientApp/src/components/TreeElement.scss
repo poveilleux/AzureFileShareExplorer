@@ -1,0 +1,16 @@
+.tree-element {
+  padding-left: 0.5em;
+  user-select: none;
+
+  &:hover {
+    background-color: #e6e3e3;
+  }
+
+  &:focus {
+    background-color: #bebebe;
+  }
+
+  .fa-folder {
+    color: #dcb679;
+  }
+}
