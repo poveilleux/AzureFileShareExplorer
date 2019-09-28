@@ -3,7 +3,7 @@ import './App.scss';
 import { getData } from './mockData';
 import TreeElement from './components/TreeElement';
 import { TreeElementModel } from './models/treeElementModel';
-import LocationBreadcrumb from './components/LocationBreadcrumb';
+import Navigation from './components/Navigation';
 
 const App: React.FC = () => {
     const [location, setLocation] = useState<string[]>([]);
@@ -19,10 +19,10 @@ const App: React.FC = () => {
         <div className="container">
             <header className="App-header">
                 <h1>Azure File Share Explorer</h1>
-                <LocationBreadcrumb location={location} />
+                <Navigation location={location} navigateTo={l => setLocation(l)} />
             </header>
             <div>
-                {data.map((e) => <TreeElement key={e.name + e.type} element={e} onDoubleClick={navigate} />)}
+                {data.map((e) => <TreeElement key={e.name} element={e} onDoubleClick={navigate} />)}
             </div>
         </div>
     );

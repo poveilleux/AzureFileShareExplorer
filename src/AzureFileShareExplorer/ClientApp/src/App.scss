@@ -19,6 +19,7 @@
     border: 1px black solid;
     padding: 0 10px;
     margin-bottom: 0.5em;
+    user-select: none;
 
     &::before {
         // forces the div to have a height
@@ -26,8 +27,6 @@
     }
 
     .location-segment {
-        user-select: none;
-
         &:hover {
             cursor: default;
             color: #49A0DB;
