@@ -1,5 +1,5 @@
 import React from 'react';
-import { TreeElementModel, ElementType } from '../models/treeElementModel';
+import { TreeElementModel, FileElementModel } from '../models/treeElementModel';
 
 interface TreeElementProps {
     element: TreeElementModel;
@@ -7,13 +7,18 @@ interface TreeElementProps {
 }
 
 function getIcon(element: TreeElementModel): JSX.Element {
-    if (element.type === ElementType.Folder) {
+    if (element.isFolder()) {
         return <i className="fas fa-folder" />;
-    } else if (element.name.endsWith(".png")) {
-        return <i className="fas fa-file-image" />;
+    } else if (element.isFile()) {
+        const file = element as FileElementModel;
+        if (file.isImage()) {
+            return <i className="far fa-file-image" />;
+        } else if (file.isText()) {
+            return <i className="far fa-file-alt" />;
+        }
     }
     
-    return <i className="fas fa-file" />;
+    return <i className="far fa-file" />;
 }
 
 const TreeElement: React.SFC<TreeElementProps> = (props) => {
