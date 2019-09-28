@@ -1,11 +1,11 @@
 import React from 'react';
 
-interface NavigationProps {
+interface NavigationBarProps {
     location: string[];
     navigateTo: (l: string[]) => void;
 }
 
-const Navigation: React.SFC<NavigationProps> = (props) => {
+const NavigationBar: React.SFC<NavigationBarProps> = (props) => {
     const onClick = (index: number) => {
         props.navigateTo(props.location.slice(0, index + 1));
     };
@@ -28,4 +28,4 @@ const Navigation: React.SFC<NavigationProps> = (props) => {
     );
 };
 
-export default Navigation;
+export default NavigationBar;
