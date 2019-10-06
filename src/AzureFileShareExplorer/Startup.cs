@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Converters;
 
 namespace AzureFileShareExplorer
 {
@@ -21,7 +22,11 @@ namespace AzureFileShareExplorer
         {
             services.Configure<StorageSettings>(_configuration.GetSection(StorageSettings.SectionName));
 
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter(true));
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

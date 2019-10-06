@@ -24,21 +24,30 @@ namespace AzureFileShareExplorer.Controllers
         }
 
         [HttpGet("{*queryvalues}")]
-        public async Task<IActionResult> GetFiles(string queryValues)
+        public async Task<IActionResult> ListFilesAndDirectories(string queryValues)
         {
             var cloudFleShare = GetFileShare(Settings.ShareName);
 
             queryValues = queryValues ?? string.Empty;
 
-            var rootDir = cloudFleShare.GetRootDirectoryReference();
+            string[] segments = queryValues.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-            if (string.IsNullOrEmpty(queryValues))
+            var currentDir = cloudFleShare.GetRootDirectoryReference();
+            List<IListFileItem> items = currentDir.ListFilesAndDirectories().ToList();
+
+            foreach (var segment in segments)
             {
-                List<IListFileItem> items = rootDir.ListFilesAndDirectories().ToList();
-                return Ok(items.Select(Convert));
+                var newDir = items.OfType<CloudFileDirectory>().FirstOrDefault(x => x.Name == segment);
+                if (newDir is null)
+                {
+                    return NotFound($"Directory {segment} was not found under {currentDir.Name}");
+                }
+
+                currentDir = newDir;
+                items = currentDir.ListFilesAndDirectories().ToList();
             }
 
-            return Ok("Your query was " + queryValues);
+            return Ok(items.Select(Convert));
 
             //var applicationLog = testResultDir.GetFileReference("application.log");
             //await applicationLog.DownloadToStreamAsync(Response.Body);
