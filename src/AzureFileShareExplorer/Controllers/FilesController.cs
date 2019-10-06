@@ -1,12 +1,15 @@
 ﻿using AzureFileShareExplorer.Models;
 using AzureFileShareExplorer.Settings;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace AzureFileShareExplorer.Controllers
@@ -24,7 +27,7 @@ namespace AzureFileShareExplorer.Controllers
         }
 
         [HttpGet("{*queryvalues}")]
-        public async Task<IActionResult> ListFilesAndDirectories(string queryValues)
+        public async Task<IActionResult> GetFiles(string queryValues)
         {
             var cloudFleShare = GetFileShare(Settings.ShareName);
 
@@ -35,12 +38,26 @@ namespace AzureFileShareExplorer.Controllers
             var currentDir = cloudFleShare.GetRootDirectoryReference();
             List<IListFileItem> items = currentDir.ListFilesAndDirectories().ToList();
 
-            foreach (var segment in segments)
+            for (int i = 0; i < segments.Length; ++i)
             {
-                var newDir = items.OfType<CloudFileDirectory>().FirstOrDefault(x => x.Name == segment);
+                string itemName = segments[i];
+
+                var newDir = items.OfType<CloudFileDirectory>().FirstOrDefault(x => x.Name == itemName);
                 if (newDir is null)
                 {
-                    return NotFound($"Directory {segment} was not found under {currentDir.Name}");
+                    // We only process the item as a file if it's the last segment.
+                    if (i == segments.Length - 1)
+                    {
+                        var file = items.OfType<CloudFile>().FirstOrDefault(x => x.Name == itemName);
+                        if (file is null)
+                        {
+                            return NotFound($"No file or directory {itemName} was not found under {currentDir.Name}");
+                        }
+
+                        return File(await file.OpenReadAsync(), GetContentType(file), true);
+                    }
+
+                    return NotFound($"No directory {itemName} was not found under {currentDir.Name}");
                 }
 
                 currentDir = newDir;
@@ -48,9 +65,6 @@ namespace AzureFileShareExplorer.Controllers
             }
 
             return Ok(items.Select(Convert));
-
-            //var applicationLog = testResultDir.GetFileReference("application.log");
-            //await applicationLog.DownloadToStreamAsync(Response.Body);
         }
 
         private CloudFileShare GetFileShare(string shareName)
@@ -72,6 +86,13 @@ namespace AzureFileShareExplorer.Controllers
             }
 
             throw new NotSupportedException($"Item type {item.GetType()} is not supported");
+        }
+
+        private static string GetContentType(CloudFile file)
+        {
+            new FileExtensionContentTypeProvider().TryGetContentType(file.Name, out string contentType);
+
+            return contentType ?? MediaTypeNames.Application.Octet;
         }
     }
 }
