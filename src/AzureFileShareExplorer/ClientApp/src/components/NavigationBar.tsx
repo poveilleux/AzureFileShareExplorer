@@ -3,12 +3,13 @@ import './NavigationBar.scss';
 
 interface NavigationBarProps {
     location: string[];
-    navigateTo: (l: string[]) => void;
+    navigateTo?: (l: string[]) => void;
 }
 
+// TODO POV: Fix navigation bar
 const NavigationBar: React.SFC<NavigationBarProps> = (props) => {
     const onClick = (index: number) => {
-        props.navigateTo(props.location.slice(0, index));
+        //props.navigateTo(props.location.slice(0, index));
     };
     const isUpDisabled = props.location.length === 0;
 
