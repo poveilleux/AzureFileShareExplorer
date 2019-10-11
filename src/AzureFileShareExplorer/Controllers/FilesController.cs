@@ -7,7 +7,6 @@ using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -64,7 +63,9 @@ namespace AzureFileShareExplorer.Controllers
                 items = currentDir.ListFilesAndDirectories().ToList();
             }
 
-            return Ok(items.Select(Convert));
+            return Ok(items.Select(Convert)
+                .OrderBy(x => x.Type)
+                .ThenBy(x => x.Name));
         }
 
         private CloudFileShare GetFileShare(string shareName)
