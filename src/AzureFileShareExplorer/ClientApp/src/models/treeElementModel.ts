@@ -3,8 +3,20 @@ export enum ElementType {
     Folder = "folder"
 }
 
+export interface ITreeElementModel {
+    type: string;
+    name: string;
+}
+
 export abstract class TreeElementModel {
     constructor(public type: ElementType, public name: string) { }
+
+    static create(e: ITreeElementModel): TreeElementModel {
+        if (e.type === ElementType.Folder)
+            return new FolderElementModel(e.name);
+        else
+            return new FileElementModel(e.name);
+    }
 
     public isFolder(): boolean {
         return this.type === ElementType.Folder;
@@ -16,7 +28,7 @@ export abstract class TreeElementModel {
 }
 
 export class FolderElementModel extends TreeElementModel {
-    constructor(name: string, public children: TreeElementModel[]) {
+    constructor(name: string) {
         super(ElementType.Folder, name);
     }
 }
