@@ -27,7 +27,7 @@ const NavigationBar: React.SFC<NavigationBarProps> = (props) => {
                     hasSegments
                         ? location
                             .map<React.ReactNode>((l, i) => <span key={l} className="location-segment" onClick={() => onClick(i + 1)}>{l}</span>)
-                            .reduce((prev, curr) => [prev, <span>  >  </span>, curr])
+                            .reduce((prev, curr, i) => [prev, <span key={i}>  >  </span>, curr])
                         : null
                 }
             </div>
