@@ -7,6 +7,7 @@ using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace AzureFileShareExplorer.Controllers
         {
             var cloudFleShare = GetFileShare(Settings.ShareName);
 
-            queryValues = queryValues ?? string.Empty;
+            queryValues ??= string.Empty;
 
             string[] segments = queryValues.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
@@ -79,11 +80,11 @@ namespace AzureFileShareExplorer.Controllers
         {
             if (item is CloudFileDirectory directory)
             {
-                return new TreeElementModel(TreeElementType.Folder, directory.Name);
+                return TreeElementModel.NewFolder(directory.Name);
             }
-            else if (item is CloudFile file)
+            if (item is CloudFile file)
             {
-                return new TreeElementModel(TreeElementType.File, file.Name);
+                return TreeElementModel.NewFile(file.Name, GetContentType(file));
             }
 
             throw new NotSupportedException($"Item type {item.GetType()} is not supported");
@@ -91,7 +92,17 @@ namespace AzureFileShareExplorer.Controllers
 
         private static string GetContentType(CloudFile file)
         {
-            new FileExtensionContentTypeProvider().TryGetContentType(file.Name, out string contentType);
+            if (!new FileExtensionContentTypeProvider().TryGetContentType(file.Name, out string contentType))
+            {
+                string extension = Path.GetExtension(file.Name);
+
+                switch (extension)
+                {
+                    case ".log":
+                        contentType = "text/log";
+                        break;
+                }
+            }
 
             return contentType ?? MediaTypeNames.Application.Octet;
         }

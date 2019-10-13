@@ -6,10 +6,23 @@
 
         public string Name { get; }
 
-        public TreeElementModel(TreeElementType type, string name)
+        public string ContentType { get; }
+
+        private TreeElementModel(TreeElementType type, string name, string contentType = null)
         {
             Type = type;
             Name = name;
+            ContentType = contentType;
+        }
+
+        public static TreeElementModel NewFolder(string name)
+        {
+            return new TreeElementModel(TreeElementType.Folder, name);
+        }
+
+        public static TreeElementModel NewFile(string name, string contentType)
+        {
+            return new TreeElementModel(TreeElementType.File, name, contentType);
         }
     }
 }
