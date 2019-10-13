@@ -6,6 +6,7 @@ export enum ElementType {
 export interface ITreeElementModel {
     type: string;
     name: string;
+    contentType: string;
 }
 
 export abstract class TreeElementModel {
@@ -15,7 +16,7 @@ export abstract class TreeElementModel {
         if (e.type === ElementType.Folder)
             return new FolderElementModel(e.name);
         else
-            return new FileElementModel(e.name);
+            return new FileElementModel(e.name, e.contentType);
     }
 
     public isFolder(): boolean {
@@ -34,16 +35,19 @@ export class FolderElementModel extends TreeElementModel {
 }
 
 export class FileElementModel extends TreeElementModel {
-    constructor(name: string) {
+    constructor(name: string, public contentType: string) {
         super(ElementType.File, name);
     }
 
     public isImage(): boolean {
-        return this.name.endsWith(".png")
-            || this.name.endsWith(".jpg");
+        return this.contentType.startsWith("image/");
+    }
+
+    public isLog(): boolean {
+        return this.contentType === "application/log";
     }
 
     public isText(): boolean {
-        return this.name.endsWith(".txt");
+        return this.contentType.startsWith("text/");
     }
 }

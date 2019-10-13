@@ -99,7 +99,7 @@ namespace AzureFileShareExplorer.Controllers
                 switch (extension)
                 {
                     case ".log":
-                        contentType = "text/log";
+                        contentType = "application/log";
                         break;
                 }
             }
