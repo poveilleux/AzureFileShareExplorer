@@ -46,7 +46,7 @@ const FileExplorer: React.FC = () => {
         };
 
         fetchData();
-    }, [location]);
+    }, [currentLocation]);
 
     function navigate(element: TreeElementModel) {
         if (element.isFolder()) {
