@@ -1,17 +1,52 @@
-import React from 'react';
-import { getData } from '../mockData';
+import React, { useEffect, useState } from 'react';
 import TreeElement from './TreeElement';
 import { appendToLocation } from '../helpers/locationHelpers';
-import { TreeElementModel } from '../models/treeElementModel';
+import { ITreeElementModel, TreeElementModel } from '../models/treeElementModel';
 import NavigationBar from './NavigationBar';
 import useReactRouter from 'use-react-router';
 
+function displayErrorMessage(): JSX.Element {
+    const onClick = () => window.location.reload();
+
+    return (
+        <div className="alert alert-danger" role="alert">
+            An error occurred while retrieving the directory's content.
+            <button type="button" className="btn btn-danger btn-sm ml-2" onClick={onClick}>Try again</button>
+        </div>
+    );
+}
+
+function displayLoading(): JSX.Element {
+    return (
+        <p>Loading...</p>
+    );
+}
+
 const FileExplorer: React.FC = () => {
     const { history, location } = useReactRouter();
+    const [isLoading, setIsLoading] = useState(false);
+    const [hasError, setHasError] = useState(false);
+    const [data, setData] = useState<TreeElementModel[]>([]);
 
     const currentLocation = decodeURIComponent(location.pathname);
 
-    const data = getData(currentLocation);
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+
+            try {
+                const response = await fetch(`/api${currentLocation}`);
+                const data = await response.json();
+                setData(data.map((d: ITreeElementModel) => TreeElementModel.create(d)));
+            } catch (e) {
+                setHasError(true);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [currentLocation]);
 
     function navigate(element: TreeElementModel) {
         if (element.isFolder()) {
@@ -27,7 +62,13 @@ const FileExplorer: React.FC = () => {
                 <NavigationBar location={currentLocation} navigateTo={l => history.push(l)} />
             </header>
             <div>
-                {data.map((e) => <TreeElement key={e.name} element={e} onDoubleClick={navigate} />)}
+                {
+                    hasError
+                        ? displayErrorMessage()
+                        : isLoading
+                            ? displayLoading()
+                            : data.map((e) => <TreeElement key={e.name} element={e} onDoubleClick={navigate} />)
+                }
             </div>
         </div>
     );
