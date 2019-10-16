@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useReactRouter from 'use-react-router';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
 
 import Viewer from 'react-viewer';
 import 'react-viewer/dist/index.css';
@@ -14,10 +16,12 @@ function displayErrorMessage(): JSX.Element {
     const onClick = () => window.location.reload();
 
     return (
-        <div className="alert alert-danger" role="alert">
+        <Alert variant="danger">
             An error occurred while retrieving the directory's content.
-            <button type="button" className="btn btn-danger btn-sm ml-2" onClick={onClick}>Try again</button>
-        </div>
+            <Button variant="danger" size="sm" className="ml-2" onClick={onClick}>
+                Try again
+            </Button>
+        </Alert>
     );
 }
 
@@ -84,9 +88,8 @@ const FileExplorer: React.FC = () => {
     }
 
     return (
-        <div className="container">
+        <div>
             <header className="App-header">
-                <h1>Azure File Share Explorer</h1>
                 <NavigationBar location={currentLocation} navigateTo={l => history.push(l)} />
             </header>
             <div>

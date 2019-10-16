@@ -1,10 +1,11 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
 
 const Layout: React.SFC = (props) => {
     return (
-        <div>
+        <Container>
             {props.children}
-        </div>
+        </Container>
     )
 };
 
