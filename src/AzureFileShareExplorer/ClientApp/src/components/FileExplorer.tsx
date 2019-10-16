@@ -88,9 +88,13 @@ const FileExplorer: React.FC = () => {
                 }
             </div>
 
-            <Viewer visible={isImageViewerVisible} onClose={() => setIsImageViewerVisible(false)}
-                rotatable={false} drag={false} zoomable={false} scalable={false} disableMouseZoom={true}
-                noImgDetails={true} activeIndex={activeIndex} images={images} />
+            <Viewer
+                visible={isImageViewerVisible}
+                onClose={() => setIsImageViewerVisible(false)}
+                rotatable={false} drag={false} zoomable={false} scalable={false}
+                disableMouseZoom={true} noImgDetails={true}
+                activeIndex={activeIndex}
+                images={images} />
         </div>
     );
 }
