@@ -7,7 +7,7 @@ interface FileViewerProps {
 
 const FileViewer: React.SFC<FileViewerProps> = (props) => {
 
-
+    // https://mozilla-frontend-infra.github.io/react-lazylog/#lazylog
     return (
         <div className="file-viewer">
             <div className={`modal fade ${props.isVisible ? "show" : ""}`} role="dialog">
