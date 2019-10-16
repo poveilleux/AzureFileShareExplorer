@@ -8,6 +8,7 @@ import TreeElement from './TreeElement';
 import NavigationBar from './NavigationBar';
 import { appendToLocation } from '../helpers/locationHelpers';
 import { ITreeElementModel, TreeElementModel, FileElementModel } from '../models/treeElementModel';
+import FileViewer from './FileViewer';
 
 function displayErrorMessage(): JSX.Element {
     const onClick = () => window.location.reload();
@@ -26,6 +27,10 @@ function displayLoading(): JSX.Element {
     );
 }
 
+function getFilePath(currentLocation: string, file: FileElementModel): string {
+    return `/api/${currentLocation}/${file.name}`;
+}
+
 const FileExplorer: React.FC = () => {
     const { history, location } = useReactRouter();
     const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +38,7 @@ const FileExplorer: React.FC = () => {
     const [data, setData] = useState<TreeElementModel[]>([]);
     const [isImageViewerVisible, setIsImageViewerVisible] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [activeFile, setActiveFile] = useState<FileElementModel | null>(null);
 
     const currentLocation = decodeURIComponent(location.pathname);
 
@@ -56,7 +62,7 @@ const FileExplorer: React.FC = () => {
 
     const images = data
         .filter(x => x.isFile() && (x as FileElementModel).isImage())
-        .map(x => ({ src: `/api/${currentLocation}/${x.name}`, alt: x.name }));
+        .map(x => ({ src: getFilePath(currentLocation, x as FileElementModel), alt: x.name }));
 
     function onOpenElement(element: TreeElementModel) {
         if (element.isFolder()) {
@@ -68,6 +74,11 @@ const FileExplorer: React.FC = () => {
                 const activeIndex = images.findIndex(x => x.alt === file.name);
                 setActiveIndex(activeIndex >= 0 ? activeIndex : 0);
                 setIsImageViewerVisible(true);
+            } else if (file.isLog()) {
+                console.log("File is log");
+                setActiveFile(file);
+            } else {
+                console.log("Unknown file type for " + file.name);
             }
         }
     }
@@ -95,6 +106,14 @@ const FileExplorer: React.FC = () => {
                 disableMouseZoom={true} noImgDetails={true}
                 activeIndex={activeIndex}
                 images={images} />
+
+            {
+                activeFile
+                    ? <FileViewer
+                        isVisible={true}
+                        url={getFilePath(currentLocation, activeFile)} />
+                    : null
+            }
         </div>
     );
 }
