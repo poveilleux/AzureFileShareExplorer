@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import TreeElement from './TreeElement';
-import { appendToLocation } from '../helpers/locationHelpers';
-import { ITreeElementModel, TreeElementModel } from '../models/treeElementModel';
-import NavigationBar from './NavigationBar';
 import useReactRouter from 'use-react-router';
+
+import Viewer from 'react-viewer';
+import 'react-viewer/dist/index.css';
+
+import TreeElement from './TreeElement';
+import NavigationBar from './NavigationBar';
+import { appendToLocation } from '../helpers/locationHelpers';
+import { ITreeElementModel, TreeElementModel, FileElementModel } from '../models/treeElementModel';
 
 function displayErrorMessage(): JSX.Element {
     const onClick = () => window.location.reload();
@@ -27,6 +31,8 @@ const FileExplorer: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [data, setData] = useState<TreeElementModel[]>([]);
+    const [isImageViewerVisible, setIsImageViewerVisible] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
 
     const currentLocation = decodeURIComponent(location.pathname);
 
@@ -48,10 +54,21 @@ const FileExplorer: React.FC = () => {
         fetchData();
     }, [currentLocation]);
 
-    function navigate(element: TreeElementModel) {
+    const images = data
+        .filter(x => x.isFile() && (x as FileElementModel).isImage())
+        .map(x => ({ src: `/api/${currentLocation}/${x.name}`, alt: x.name }));
+
+    function onOpenElement(element: TreeElementModel) {
         if (element.isFolder()) {
             const newLocation = appendToLocation(location.pathname, element.name);
             history.push(newLocation);
+        } else if (element.isFile()) {
+            const file = element as FileElementModel;
+            if (file.isImage()) {
+                const activeIndex = images.findIndex(x => x.alt === file.name);
+                setActiveIndex(activeIndex >= 0 ? activeIndex : 0);
+                setIsImageViewerVisible(true);
+            }
         }
     }
 
@@ -67,9 +84,13 @@ const FileExplorer: React.FC = () => {
                         ? displayErrorMessage()
                         : isLoading
                             ? displayLoading()
-                            : data.map((e) => <TreeElement key={e.name} element={e} onDoubleClick={navigate} />)
+                            : data.map((e) => <TreeElement key={e.name} element={e} onDoubleClick={onOpenElement} />)
                 }
             </div>
+
+            <Viewer visible={isImageViewerVisible} onClose={() => setIsImageViewerVisible(false)}
+                rotatable={false} drag={false} zoomable={false} scalable={false} disableMouseZoom={true}
+                noImgDetails={true} activeIndex={activeIndex} images={images} />
         </div>
     );
 }
