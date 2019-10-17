@@ -17,7 +17,7 @@ const FileViewer: React.SFC<FileViewerProps> = (props) => {
                 <ModalBody>
                     {
                         props.url
-                            ? <LazyLog url={props.url} />
+                            ? <LazyLog url={props.url} selectableLines={true} enableSearch={true} />
                             : null
                     }
                 </ModalBody>
