@@ -1,0 +1,10 @@
+$modalWidth: 80vw;
+
+.file-viewer-modal {
+    width: $modalWidth;
+    max-width: $modalWidth;
+
+    .modal-content {
+        height: 90vh;
+    }
+}

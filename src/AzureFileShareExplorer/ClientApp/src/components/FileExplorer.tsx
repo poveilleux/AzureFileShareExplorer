@@ -31,8 +31,10 @@ function displayLoading(): JSX.Element {
     );
 }
 
-function getFilePath(currentLocation: string, file: FileElementModel): string {
-    return `/api/${currentLocation}/${file.name}`;
+function getFilePath(currentLocation: string, file: FileElementModel | null): string | null {
+    return file
+        ? `/api${currentLocation}/${file.name}`
+        : null;
 }
 
 const FileExplorer: React.FC = () => {
@@ -66,7 +68,7 @@ const FileExplorer: React.FC = () => {
 
     const images = data
         .filter(x => x.isFile() && (x as FileElementModel).isImage())
-        .map(x => ({ src: getFilePath(currentLocation, x as FileElementModel), alt: x.name }));
+        .map(x => ({ src: getFilePath(currentLocation, x as FileElementModel)!, alt: x.name }));
 
     function onOpenElement(element: TreeElementModel) {
         if (element.isFolder()) {
@@ -110,13 +112,9 @@ const FileExplorer: React.FC = () => {
                 activeIndex={activeIndex}
                 images={images} />
 
-            {
-                activeFile
-                    ? <FileViewer
-                        isVisible={true}
-                        url={getFilePath(currentLocation, activeFile)} />
-                    : null
-            }
+            <FileViewer
+                url={getFilePath(currentLocation, activeFile)}
+                onHide={() => setActiveFile(null)} />            
         </div>
     );
 }

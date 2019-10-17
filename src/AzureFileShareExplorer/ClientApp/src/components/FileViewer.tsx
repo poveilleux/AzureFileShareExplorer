@@ -1,24 +1,27 @@
 import React from 'react';
+import Modal from 'react-bootstrap/Modal';
+import ModalBody from 'react-bootstrap/ModalBody';
+import './FileViewer.scss';
+
+import { LazyLog } from 'react-lazylog';
 
 interface FileViewerProps {
-    isVisible: boolean;
-    url: string;
+    url: string | null;
+    onHide: () => void;
 }
 
 const FileViewer: React.SFC<FileViewerProps> = (props) => {
-
-    // https://mozilla-frontend-infra.github.io/react-lazylog/#lazylog
     return (
         <div className="file-viewer">
-            <div className={`modal fade ${props.isVisible ? "show" : ""}`} role="dialog">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-body">
-                            {props.url}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Modal show={props.url !== null} onHide={props.onHide} dialogClassName="file-viewer-modal">
+                <ModalBody>
+                    {
+                        props.url
+                            ? <LazyLog url={props.url} />
+                            : null
+                    }
+                </ModalBody>
+            </Modal>
         </div>
     );
 }
