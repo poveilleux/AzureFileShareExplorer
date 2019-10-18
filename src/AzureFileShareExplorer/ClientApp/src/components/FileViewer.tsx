@@ -6,18 +6,18 @@ import './FileViewer.scss';
 import { LazyLog } from 'react-lazylog';
 
 interface FileViewerProps {
-    url: string | null;
+    url: string;
     onHide: () => void;
 }
 
 const FileViewer: React.SFC<FileViewerProps> = (props) => {
     return (
         <div className="file-viewer">
-            <Modal show={props.url !== null} onHide={props.onHide} dialogClassName="file-viewer-modal">
+            <Modal show={!!props.url} onHide={props.onHide} dialogClassName="file-viewer-modal">
                 <ModalBody>
                     {
                         props.url
-                            ? <LazyLog url={props.url} selectableLines={true} enableSearch={true} />
+                            ? <LazyLog url={props.url} selectableLines={true} /*enableSearch extraLines={1}*/ />
                             : null
                     }
                 </ModalBody>

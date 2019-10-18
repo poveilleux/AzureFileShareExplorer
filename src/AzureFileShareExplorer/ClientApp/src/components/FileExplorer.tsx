@@ -31,10 +31,10 @@ function displayLoading(): JSX.Element {
     );
 }
 
-function getFilePath(currentLocation: string, file: FileElementModel | null): string | null {
+function getFilePath(currentLocation: string, file: FileElementModel | null): string {
     return file
         ? `/api${currentLocation}/${file.name}`
-        : null;
+        : "";
 }
 
 const FileExplorer: React.FC = () => {
@@ -80,11 +80,10 @@ const FileExplorer: React.FC = () => {
                 const activeIndex = images.findIndex(x => x.alt === file.name);
                 setActiveIndex(activeIndex >= 0 ? activeIndex : 0);
                 setIsImageViewerVisible(true);
-            } else if (file.isLog()) {
-                console.log("File is log");
+            } else if (file.isText()) {
                 setActiveFile(file);
             } else {
-                console.log("Unknown file type for " + file.name);
+                console.log(`Unknown file type for ${file.name}`, file);
             }
         }
     }
