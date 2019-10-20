@@ -32,9 +32,9 @@ function displayLoading(): JSX.Element {
     );
 }
 
-function getFilePath(currentLocation: string, file: FileElementModel | null): string {
+function getFilePath(currentLocation: string, file: FileElementModel | null, download?: boolean): string {
     return file
-        ? `/api${currentLocation}/${file.name}`
+        ? `/api${currentLocation}/${file.name}${download ? "?download=true" : ""}`
         : "";
 }
 
@@ -84,7 +84,7 @@ const FileExplorer: React.FC = () => {
             } else if (file.isText()) {
                 setActiveFile(file);
             } else {
-                downloadFile(getFilePath(currentLocation, file), file.name);
+                downloadFile(getFilePath(currentLocation, file, true), file.name);
             }
         }
     }
