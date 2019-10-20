@@ -68,7 +68,7 @@ const FileExplorer: React.FC = () => {
 
     const images = data
         .filter(x => x.isFile() && (x as FileElementModel).isImage())
-        .map(x => ({ src: getFilePath(currentLocation, x as FileElementModel)!, alt: x.name }));
+        .map(x => ({ src: getFilePath(currentLocation, x as FileElementModel), alt: x.name }));
 
     function onOpenElement(element: TreeElementModel) {
         if (element.isFolder()) {
