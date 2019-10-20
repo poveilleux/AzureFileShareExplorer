@@ -1,3 +1,5 @@
+/// <reference path="../../react-lazylog.aug.d.ts" />  
+
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import ModalBody from 'react-bootstrap/ModalBody';
@@ -17,7 +19,7 @@ const FileViewer: React.SFC<FileViewerProps> = (props) => {
                 <ModalBody>
                     {
                         props.url
-                            ? <LazyLog url={props.url} selectableLines={true} /*enableSearch extraLines={1}*/ />
+                            ? <LazyLog url={props.url} selectableLines enableSearch extraLines={1} />
                             : null
                     }
                 </ModalBody>
