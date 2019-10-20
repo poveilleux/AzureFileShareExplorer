@@ -43,11 +43,8 @@ export class FileElementModel extends TreeElementModel {
         return this.contentType.startsWith("image/");
     }
 
-    public isLog(): boolean {
-        return this.contentType === "application/log";
-    }
-
     public isText(): boolean {
-        return this.contentType.startsWith("text/");
+        return this.contentType.startsWith("text/")
+            || this.contentType === "application/log";
     }
 }
