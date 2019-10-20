@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +28,7 @@ namespace AzureFileShareExplorer.Controllers
         }
 
         [HttpGet("{*queryvalues}")]
-        public async Task<IActionResult> GetFiles(string queryValues)
+        public async Task<IActionResult> GetFiles(string queryValues, [FromQuery] bool? download)
         {
             var cloudFleShare = GetFileShare(Settings.ShareName);
 
@@ -52,6 +53,11 @@ namespace AzureFileShareExplorer.Controllers
                         if (file is null)
                         {
                             return NotFound($"No file or directory {itemName} was not found under {currentDir.Name}");
+                        }
+
+                        if (download == true)
+                        {
+                            Response.Headers.Add(HeaderNames.ContentDisposition, "attachment");
                         }
 
                         return File(await file.OpenReadAsync(), GetContentType(file), true);

@@ -8,6 +8,7 @@ import 'react-viewer/dist/index.css';
 
 import TreeElement from './TreeElement';
 import NavigationBar from './NavigationBar';
+import { downloadFile } from '../helpers/fileHelpers';
 import { appendToLocation } from '../helpers/locationHelpers';
 import { ITreeElementModel, TreeElementModel, FileElementModel } from '../models/treeElementModel';
 import FileViewer from './FileViewer';
@@ -31,9 +32,9 @@ function displayLoading(): JSX.Element {
     );
 }
 
-function getFilePath(currentLocation: string, file: FileElementModel | null): string {
+function getFilePath(currentLocation: string, file: FileElementModel | null, download?: boolean): string {
     return file
-        ? `/api${currentLocation}/${file.name}`
+        ? `/api${currentLocation}/${file.name}${download ? "?download=true" : ""}`
         : "";
 }
 
@@ -83,7 +84,7 @@ const FileExplorer: React.FC = () => {
             } else if (file.isText()) {
                 setActiveFile(file);
             } else {
-                console.log(`Unknown file type for ${file.name}`, file);
+                downloadFile(getFilePath(currentLocation, file, true), file.name);
             }
         }
     }
