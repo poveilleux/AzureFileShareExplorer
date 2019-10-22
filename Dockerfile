@@ -1,4 +1,19 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build-env
+# ==================================
+#          Frontend build
+# ==================================
+FROM node:12.2.0-alpine as build-frontend
+WORKDIR /app
+
+COPY src/AzureFileShareExplorer/ClientApp/package.json src/AzureFileShareExplorer/ClientApp/package-lock.json ./
+RUN npm install
+
+COPY src/AzureFileShareExplorer/ClientApp/. ./
+RUN npm run build
+
+# ==================================
+#          Backend build
+# ==================================
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build-backend
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
@@ -9,10 +24,13 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish -c Release -o out
 
-# Build runtime image
+# ==================================
+#           Runtime image
+# ==================================
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.0
 WORKDIR /app
-COPY --from=build-env /app/out .
+COPY --from=build-backend /app/out .
+COPY --from=build-frontend /app/build ./ClientApp/build
 
 EXPOSE 5000
 
