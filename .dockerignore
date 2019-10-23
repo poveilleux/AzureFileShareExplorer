@@ -1,0 +1,10 @@
+.gitignore
+Dockerfile
+**/README.md
+.git/
+.vs/
+.vscode/
+**/bin/
+**/obj/
+**/node_modules/
+**/ClientApp/build/
