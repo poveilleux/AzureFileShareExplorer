@@ -1,7 +1,7 @@
 # ==================================
 #          Frontend build
 # ==================================
-FROM node:12.2.0-alpine as build-frontend
+FROM node:12.13.0-alpine as build-frontend
 WORKDIR /app
 
 COPY src/AzureFileShareExplorer/ClientApp/package.json src/AzureFileShareExplorer/ClientApp/package-lock.json ./
