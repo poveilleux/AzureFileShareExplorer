@@ -1,0 +1,39 @@
+# ==================================
+#          Frontend build
+# ==================================
+FROM node:12.13.0-alpine as build-frontend
+WORKDIR /app
+
+COPY src/AzureFileShareExplorer/ClientApp/package.json src/AzureFileShareExplorer/ClientApp/package-lock.json ./
+RUN npm install
+
+COPY src/AzureFileShareExplorer/ClientApp/. ./
+RUN npm run build
+
+# ==================================
+#          Backend build
+# ==================================
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build-backend
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY src/**/*.csproj ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+# ==================================
+#           Runtime image
+# ==================================
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.0
+WORKDIR /app
+COPY --from=build-backend /app/out .
+COPY --from=build-frontend /app/build ./ClientApp/build
+
+EXPOSE 5000
+
+ENV ASPNETCORE_ENVIRONMENT Production
+
+ENTRYPOINT ["dotnet", "AzureFileShareExplorer.dll"]
