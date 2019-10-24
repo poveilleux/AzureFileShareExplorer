@@ -17,7 +17,7 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - script: |
+    - bash: |
         echo "IsBeta: $IsBeta"
         echo "Version: $Version"
         ImageTag = $Version
