@@ -17,12 +17,12 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - bash: |
+    - script: |
         echo "IsBeta: $IsBeta"
         echo "Version: $Version"
-        ImageTag = $Version
+        ImageTag=$Version
         if [[ $IsBeta = "True" ]]; then
-          ImageTag = "$Version-beta"
+          ImageTag="$Version-beta"
         fi
         echo "##vso[task.setvariable variable=ImageTag]$ImageTag"
         echo "ImageTag: $ImageTag"
