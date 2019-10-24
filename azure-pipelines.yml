@@ -21,7 +21,7 @@ stages:
         echo IsBeta: $IsBeta
         echo Version: $Version
       env:
-        IsBeta: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+        IsBeta: ${{ ne(variables['Build.SourceBranch'], 'refs/heads/master') }}
         Version: $(version)
 
     # - task: Docker@2
