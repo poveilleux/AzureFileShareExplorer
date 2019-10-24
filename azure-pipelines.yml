@@ -28,7 +28,7 @@ stages:
         echo "ImageTag: $ImageTag"
       displayName: Compute image tag
       env:
-        IsBeta: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
+        IsBeta: ${{ ne(variables['Build.SourceBranch'], 'refs/heads/master') }}
         Version: $(version)
 
     # - task: Docker@2
