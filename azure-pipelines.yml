@@ -15,7 +15,7 @@ stages:
   jobs:  
   - job: Build
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: ubuntu-latest
     steps:
     - script: |
         echo "IsMaster: $IsMaster"
@@ -36,6 +36,13 @@ stages:
       displayName: Build an image
       inputs:
         command: build
-        dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+        dockerfile: $(Build.SourcesDirectory)/Dockerfile
         tags: |
           $(ImageTag)
+
+    - task: Docker@2
+      displayName: Push to Docker Hub
+      enabled: false
+      inputs:
+        command: push
+        tags: $(ImageTag)
