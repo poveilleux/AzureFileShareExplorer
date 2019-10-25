@@ -1,4 +1,6 @@
 # AzureFileShareExplorer
+[![Build Status](https://dev.azure.com/poveilleux/AzureFileStorageExplorer/_apis/build/status/poveilleux.AzureFileShareExplorer?branchName=master)](https://dev.azure.com/poveilleux/AzureFileStorageExplorer/_build/latest?definitionId=1&branchName=master)
+
 Easily explore your Azure File shares with the Azure File Share Explorer.
 
 ## Build with Docker
