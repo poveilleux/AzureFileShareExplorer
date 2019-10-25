@@ -36,21 +36,8 @@ stages:
     - task: Docker@2
       displayName: Build an image
       inputs:
-        command: build
+        command: buildAndPush
+        containerRegistry: DockerHub
         repository: $(dockerRepository)
         dockerfile: $(Build.SourcesDirectory)/Dockerfile
-        tags: |
-          $(ImageTag)
-
-    - task: Docker@2
-      displayName: Login to DockerHub
-      inputs:
-        command: login
-        containerRegistry: DockerHub
-
-    - task: Docker@2
-      displayName: Push to Docker Hub
-      enabled: false
-      inputs:
-        command: push
         tags: $(ImageTag)
