@@ -7,6 +7,7 @@ resources:
 - repo: self
 
 variables:
+  dockerRepository: poveilleux5/azure-file-share-explorer
   version: 0.0.1
 
 stages:
@@ -24,12 +25,13 @@ stages:
         if [[ $IsMaster = "False" ]]; then
           ImageTag="$Version-build-$BuildNumber"
         fi
-        echo "##vso[task.setvariable variable=ImageTag]$ImageTag"
+        echo "##vso[task.setvariable variable=ImageTag]$Repository:$ImageTag"
         echo "ImageTag: $ImageTag"
       displayName: Compute image tag
       env:
         BuildNumber: $(Build.BuildNumber)
         IsMaster: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
+        Repository: $(dockerRepository)
         Version: $(version)
 
     - task: Docker@2
@@ -39,6 +41,12 @@ stages:
         dockerfile: $(Build.SourcesDirectory)/Dockerfile
         tags: |
           $(ImageTag)
+
+    - task: Docker@2
+      displayName: Login to DockerHub
+      inputs:
+        command: login
+        containerRegistry: DockerHub
 
     - task: Docker@2
       displayName: Push to Docker Hub
