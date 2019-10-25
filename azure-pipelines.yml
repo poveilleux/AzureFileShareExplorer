@@ -1,4 +1,4 @@
-name: $(Date:yyyyMMdd)-$(Rev:r)
+name: $(Date:yyyyMMdd)-$(Rev:rrr)
 
 trigger:
 - master
@@ -21,7 +21,7 @@ stages:
         echo "IsMaster: $IsMaster"
         echo "Version: $Version"
         ImageTag="$Version-beta"
-        if [[ $IsMaster = "True" ]]; then
+        if [[ $IsMaster = "False" ]]; then
           ImageTag="$Version-build-$BuildNumber"
         fi
         echo "##vso[task.setvariable variable=ImageTag]$ImageTag"
