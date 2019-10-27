@@ -1,10 +1,13 @@
-﻿using AzureFileShareExplorer.Settings;
+﻿using AzureFileShareExplorer.Extensions;
+using AzureFileShareExplorer.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -23,7 +26,9 @@ namespace AzureFileShareExplorer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<StorageSettings>(_configuration.GetSection(StorageSettings.SectionName));
+            services.AddTransient<IStartupFilter, ConfigurationValidator>();
+
+            services.ConfigureAndValidate<StorageSettings>(_configuration, StorageSettings.Name);
 
             services.AddControllers()
                 .AddJsonOptions(options =>
