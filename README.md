@@ -10,7 +10,22 @@ Easily explore your Azure File shares with the Azure File Share Explorer.
   git clone https://github.com/poveilleux/AzureFileShareExplorer.git
   ```
 4. Open using Visual Studio 2019 (Visual Studio Code support coming soon!)
-5. 
+5. Before running for the first time, you will need to edit the [user secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.0&tabs=windows) of the AzureFileShareExplorer project. You can use either of the following formats
+  ```json
+  {
+    "Storage": {
+	  "ConnectionString": "",
+	  "ShareName": ""
+	}
+  }
+  ```
+  or
+  ```json
+  {
+    "Storage:ConnectionString": "",
+    "Storage:ShareName": ""
+  }
+  ```
 
 ## Build with Docker
 To build with Docker, run the following command from the root of the repository:
