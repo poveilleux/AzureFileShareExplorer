@@ -41,3 +41,13 @@ stages:
         repository: $(dockerRepository)
         dockerfile: $(Build.SourcesDirectory)/Dockerfile
         tags: $(ImageTag)
+    
+    - script: helm package azure-file-share-explorer --destination $(Pipeline.Workspace) --app-version $ImageTag
+      displayName: Package helm chart
+      workingDirectory: chart/
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish artifacts
+      inputs:
+        targetPath: $(Pipeline.Workspace)
+        artifact: drop
