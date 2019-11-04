@@ -16,7 +16,7 @@ stages:
   jobs:  
   - job: Build
     pool:
-      vmImage: ubuntu-latest
+      vmImage: ubuntu-16.04
     steps:
     - script: |
         echo "IsMaster: $IsMaster"
