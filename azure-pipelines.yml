@@ -44,12 +44,12 @@ stages:
     
     - script: |
         helm init --client-only
-        helm package azure-file-share-explorer --destination $(Pipeline.Workspace)/staging --app-version $(ImageTag)
+        helm package azure-file-share-explorer --destination $(Build.ArtifactStagingDirectory) --app-version $(ImageTag)
       displayName: Package helm chart
       workingDirectory: chart/
 
-    - task: PublishPipelineArtifact@1
+    - task: PublishBuildArtifacts@1
       displayName: Publish artifacts
       inputs:
-        targetPath: $(Pipeline.Workspace)/staging
-        artifact: drop
+        pathtoPublish: $(Build.ArtifactStagingDirectory)
+        artifactName: drop'
