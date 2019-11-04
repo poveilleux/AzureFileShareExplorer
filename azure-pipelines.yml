@@ -52,4 +52,4 @@ stages:
       displayName: Publish artifacts
       inputs:
         pathtoPublish: $(Build.ArtifactStagingDirectory)
-        artifactName: drop'
+        artifactName: drop

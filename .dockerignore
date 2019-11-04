@@ -1,6 +1,7 @@
 .gitignore
 Dockerfile
 **/README.md
+**/appsettings.Development.json
 .git/
 .vs/
 .vscode/
