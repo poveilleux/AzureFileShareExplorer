@@ -42,7 +42,7 @@ stages:
         dockerfile: $(Build.SourcesDirectory)/Dockerfile
         tags: $(ImageTag)
     
-    - script: helm package azure-file-share-explorer --destination $(Pipeline.Workspace) --app-version $ImageTag
+    - script: helm package azure-file-share-explorer --destination $(Pipeline.Workspace) --app-version $(ImageTag)
       displayName: Package helm chart
       workingDirectory: chart/
 
