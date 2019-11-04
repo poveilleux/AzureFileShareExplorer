@@ -16,7 +16,7 @@ stages:
   jobs:  
   - job: Build
     pool:
-      vmImage: ubuntu-latest
+      vmImage: ubuntu-16.04
     steps:
     - script: |
         echo "IsMaster: $IsMaster"
@@ -41,3 +41,15 @@ stages:
         repository: $(dockerRepository)
         dockerfile: $(Build.SourcesDirectory)/Dockerfile
         tags: $(ImageTag)
+    
+    - script: |
+        helm init --client-only
+        helm package azure-file-share-explorer --destination $(Build.ArtifactStagingDirectory) --app-version $(ImageTag)
+      displayName: Package helm chart
+      workingDirectory: chart/
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish artifacts
+      inputs:
+        pathtoPublish: $(Build.ArtifactStagingDirectory)
+        artifactName: drop
