@@ -59,7 +59,6 @@ namespace AzureFileShareExplorer
         public void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
-            app.UseAuthorization();
 
             if (_environment.IsDevelopment())
             {
@@ -78,18 +77,8 @@ namespace AzureFileShareExplorer
                 endpoints.MapControllers();
             });
 
-            // TODO: Extract to middleware.
-            app.Use(async (ctx, next) =>
-            {
-                if (!ctx.User.Identity.IsAuthenticated)
-                {
-                    await ctx.ChallengeAsync();
-                }
-                else
-                {
-                    await next();
-                }
-            });
+            // Ensures user is authenticated before accessing the SPA.
+            app.EnforceAuthentication();
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
