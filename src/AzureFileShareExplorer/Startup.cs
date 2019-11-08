@@ -1,17 +1,17 @@
 ﻿using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Settings;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.IdentityModel.Logging;
+using System.Diagnostics;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,9 +21,15 @@ namespace AzureFileShareExplorer
     {
         private readonly IConfiguration _configuration;
 
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _environment;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
+            _environment = environment;
+
+            // Display PII when debugging.
+            IdentityModelEventSource.ShowPII = Debugger.IsAttached;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -33,6 +39,8 @@ namespace AzureFileShareExplorer
             services.AddTransient<IStartupFilter, ConfigurationValidator>();
 
             services.ConfigureAndValidate<StorageSettings>(_configuration, StorageSettings.Name);
+
+            AddAuthenticationServices(services);
 
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -45,18 +53,15 @@ namespace AzureFileShareExplorer
             {
                 configuration.RootPath = "ClientApp/build";
             });
-
-            AddAuthenticationServices(services);
-            AddAuthorizationServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
             app.UseAuthorization();
 
-            if (env.IsDevelopment())
+            if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -67,28 +72,46 @@ namespace AzureFileShareExplorer
                 app.UseHsts();
             }
 
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
 
+            // TODO: Extract to middleware.
+            app.Use(async (ctx, next) =>
+            {
+                if (!ctx.User.Identity.IsAuthenticated)
+                {
+                    await ctx.ChallengeAsync();
+                }
+                else
+                {
+                    await next();
+                }
+            });
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
+                if (_environment.IsDevelopment())
                 {
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
         }
 
-        private static void AddAuthenticationServices(IServiceCollection services)
+        private void AddAuthenticationServices(IServiceCollection services)
         {
+            var azureAdSettings = _configuration.GetSection(AzureAdSettings.Name).Get<AzureAdSettings>();
+
+            if (!azureAdSettings.Enabled)
+                return;
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -97,23 +120,18 @@ namespace AzureFileShareExplorer
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                options.ClientId = null;
-                options.ClientSecret = null;
+                options.ClientId = azureAdSettings.ClientId;
+                options.ClientSecret = azureAdSettings.ClientSecret;
 
-                options.Authority = "https://login.microsoftonline.com/common";
-                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.Authority = azureAdSettings.Authority;
+                options.ResponseType = azureAdSettings.ResponseType;
 
-                options.GetClaimsFromUserInfoEndpoint = true;
-            });
-        }
+                options.GetClaimsFromUserInfoEndpoint = azureAdSettings.GetClaimsFromUserInfoEndpoint;
 
-        private static void AddAuthorizationServices(IServiceCollection services)
-        {
-            services.AddAuthorization(options =>
-            {
-                options.DefaultPolicy = new AuthorizationPolicyBuilder(OpenIdConnectDefaults.AuthenticationScheme)
-                    .RequireAuthenticatedUser()
-                    .Build();
+                if (azureAdSettings.ValidIssuers.Any())
+                {
+                    options.TokenValidationParameters.ValidIssuers = azureAdSettings.ValidIssuers;
+                }
             });
         }
     }
