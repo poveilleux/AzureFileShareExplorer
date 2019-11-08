@@ -1,5 +1,8 @@
 ﻿using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Settings;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -7,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -41,11 +45,17 @@ namespace AzureFileShareExplorer
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            AddAuthenticationServices(services);
+            AddAuthorizationServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -74,6 +84,36 @@ namespace AzureFileShareExplorer
                 {
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
+            });
+        }
+
+        private static void AddAuthenticationServices(IServiceCollection services)
+        {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddOpenIdConnect(options =>
+            {
+                options.ClientId = null;
+                options.ClientSecret = null;
+
+                options.Authority = "https://login.microsoftonline.com/common";
+                options.ResponseType = OpenIdConnectResponseType.Code;
+
+                options.GetClaimsFromUserInfoEndpoint = true;
+            });
+        }
+
+        private static void AddAuthorizationServices(IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.DefaultPolicy = new AuthorizationPolicyBuilder(OpenIdConnectDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .Build();
             });
         }
     }
