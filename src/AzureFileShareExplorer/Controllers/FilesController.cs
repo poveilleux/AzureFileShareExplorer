@@ -30,6 +30,11 @@ namespace AzureFileShareExplorer.Controllers
         [HttpGet("{*queryvalues}")]
         public async Task<IActionResult> GetFiles(string queryValues, [FromQuery] bool? download)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
             var cloudFleShare = GetFileShare(Settings.ShareName);
 
             queryValues ??= string.Empty;

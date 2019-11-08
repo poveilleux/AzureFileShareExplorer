@@ -1,13 +1,17 @@
 ﻿using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Settings;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.IdentityModel.Logging;
+using System.Diagnostics;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -17,9 +21,15 @@ namespace AzureFileShareExplorer
     {
         private readonly IConfiguration _configuration;
 
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _environment;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
+            _environment = environment;
+
+            // Display PII when debugging.
+            IdentityModelEventSource.ShowPII = Debugger.IsAttached;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -29,6 +39,8 @@ namespace AzureFileShareExplorer
             services.AddTransient<IStartupFilter, ConfigurationValidator>();
 
             services.ConfigureAndValidate<StorageSettings>(_configuration, StorageSettings.Name);
+
+            AddAuthenticationServices(services);
 
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -44,9 +56,11 @@ namespace AzureFileShareExplorer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            app.UseAuthentication();
+
+            if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -57,22 +71,55 @@ namespace AzureFileShareExplorer
                 app.UseHsts();
             }
 
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
 
+            // Ensures user is authenticated before accessing the SPA.
+            app.EnforceAuthentication();
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
+                if (_environment.IsDevelopment())
                 {
                     spa.UseReactDevelopmentServer(npmScript: "start");
+                }
+            });
+        }
+
+        private void AddAuthenticationServices(IServiceCollection services)
+        {
+            var azureAdSettings = _configuration.GetSection(AzureAdSettings.Name).Get<AzureAdSettings>();
+
+            if (!azureAdSettings.Enabled)
+                return;
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddOpenIdConnect(options =>
+            {
+                options.ClientId = azureAdSettings.ClientId;
+                options.ClientSecret = azureAdSettings.ClientSecret;
+
+                options.Authority = azureAdSettings.Authority;
+                options.ResponseType = azureAdSettings.ResponseType;
+
+                options.GetClaimsFromUserInfoEndpoint = azureAdSettings.GetClaimsFromUserInfoEndpoint;
+
+                if (azureAdSettings.ValidIssuers.Any())
+                {
+                    options.TokenValidationParameters.ValidIssuers = azureAdSettings.ValidIssuers;
                 }
             });
         }
