@@ -1,23 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace AzureFileShareExplorer.Settings
 {
-    public class AzureAdSettings
+    public class AzureAdSettings : OpenIdConnectOptions
     {
         internal const string Name = "AzureAd";
 
         public bool Enabled { get; set; }
-
-        public string Authority { get; set; }
-
-        public string ClientId { get; set; }
-
-        public string ClientSecret { get; set; }
-
-        public string ResponseType { get; set; }
-
-        public bool GetClaimsFromUserInfoEndpoint { get; set; }
-
-        public string[] ValidIssuers { get; set; } = Array.Empty<string>();
     }
 }

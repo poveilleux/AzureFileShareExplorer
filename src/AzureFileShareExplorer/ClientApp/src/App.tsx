@@ -1,12 +1,12 @@
 import React from 'react';
-import { Route } from 'react-router';
+import AuthorizeRoute from './components/authorization/AuthorizeRoute';
 import Layout from './components/Layout';
 import FileExplorer from './components/FileExplorer';
 
 const App: React.FC = () => {
     return (
         <Layout>
-            <Route path="/" component={FileExplorer} />
+            <AuthorizeRoute path="/" component={FileExplorer} />
         </Layout>
     );
 }
