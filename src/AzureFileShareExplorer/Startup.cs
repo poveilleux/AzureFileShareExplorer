@@ -1,6 +1,5 @@
 ﻿using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Settings;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -40,6 +38,7 @@ namespace AzureFileShareExplorer
 
             services.ConfigureAndValidate<StorageSettings>(_configuration, StorageSettings.Name);
 
+            services.AddAuthorization();
             AddAuthenticationServices(services);
 
             services.AddControllers()
@@ -59,6 +58,7 @@ namespace AzureFileShareExplorer
         public void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
+            app.UseAuthorization();
 
             if (_environment.IsDevelopment())
             {
@@ -77,9 +77,6 @@ namespace AzureFileShareExplorer
                 endpoints.MapControllers();
             });
 
-            // Ensures user is authenticated before accessing the SPA.
-            app.EnforceAuthentication();
-
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
@@ -96,9 +93,9 @@ namespace AzureFileShareExplorer
 
         private void AddAuthenticationServices(IServiceCollection services)
         {
-            var azureAdSettings = _configuration.GetSection(AzureAdSettings.Name).Get<AzureAdSettings>();
+            var azureAdSettings = _configuration.GetSection(AzureAdSettings.Name);
 
-            if (!azureAdSettings.Enabled)
+            if (!azureAdSettings.Get<AzureAdSettings>().Enabled)
                 return;
 
             services.AddAuthentication(options =>
@@ -109,18 +106,7 @@ namespace AzureFileShareExplorer
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                options.ClientId = azureAdSettings.ClientId;
-                options.ClientSecret = azureAdSettings.ClientSecret;
-
-                options.Authority = azureAdSettings.Authority;
-                options.ResponseType = azureAdSettings.ResponseType;
-
-                options.GetClaimsFromUserInfoEndpoint = azureAdSettings.GetClaimsFromUserInfoEndpoint;
-
-                if (azureAdSettings.ValidIssuers.Any())
-                {
-                    options.TokenValidationParameters.ValidIssuers = azureAdSettings.ValidIssuers;
-                }
+                azureAdSettings.Bind(options);
             });
         }
     }
