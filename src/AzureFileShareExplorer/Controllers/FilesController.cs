@@ -7,7 +7,6 @@ using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -35,26 +34,26 @@ namespace AzureFileShareExplorer.Controllers
                 return Unauthorized();
             }
 
-            var cloudFleShare = GetFileShare(Settings.ShareName);
+            CloudFileShare cloudFleShare = GetFileShare(Settings.ShareName);
 
             queryValues ??= string.Empty;
 
             string[] segments = queryValues.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-            var currentDir = cloudFleShare.GetRootDirectoryReference();
-            List<IListFileItem> items = currentDir.ListFilesAndDirectories().ToList();
+            CloudFileDirectory currentDir = cloudFleShare.GetRootDirectoryReference();
+            var items = currentDir.ListFilesAndDirectories().ToList();
 
             for (int i = 0; i < segments.Length; ++i)
             {
                 string itemName = segments[i];
 
-                var newDir = items.OfType<CloudFileDirectory>().FirstOrDefault(x => x.Name == itemName);
+                CloudFileDirectory newDir = items.OfType<CloudFileDirectory>().FirstOrDefault(x => x.Name == itemName);
                 if (newDir is null)
                 {
                     // We only process the item as a file if it's the last segment.
                     if (i == segments.Length - 1)
                     {
-                        var file = items.OfType<CloudFile>().FirstOrDefault(x => x.Name == itemName);
+                        CloudFile file = items.OfType<CloudFile>().FirstOrDefault(x => x.Name == itemName);
                         if (file is null)
                         {
                             return NotFound($"No file or directory {itemName} was not found under {currentDir.Name}");
@@ -83,8 +82,8 @@ namespace AzureFileShareExplorer.Controllers
         private CloudFileShare GetFileShare(string shareName)
         {
             var cloudStorageAccount = CloudStorageAccount.Parse(Settings.ConnectionString);
-            var cloudFileClient = cloudStorageAccount.CreateCloudFileClient();
-            return cloudFileClient.GetShareReference(shareName);
+            CloudFileClient client = cloudStorageAccount.CreateCloudFileClient();
+            return client.GetShareReference(shareName);
         }
 
         private static TreeElementModel Convert(IListFileItem item)
