@@ -4,7 +4,6 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Viewer from 'react-viewer';
 import 'react-viewer/dist/index.css';
-
 import TreeElement from './TreeElement';
 import NavigationBar from './NavigationBar';
 import { downloadFile } from '../helpers/fileHelpers';

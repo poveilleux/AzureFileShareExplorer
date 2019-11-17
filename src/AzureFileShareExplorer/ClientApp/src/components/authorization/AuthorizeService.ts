@@ -31,17 +31,6 @@ export class AuthorizeService {
         return this._user;
     }
 
-    private async fetchUser(): Promise<Nullable<UserModel>> {
-        try {
-            const response = await fetch("/user/info");
-            const user: UserModel = await response.json();
-            return user;
-        } catch (e) {
-            console.error("Could not fetch user", e);
-            return null;
-        }
-    }
-
     updateState(user: Nullable<UserModel>) {
         this._user = user;
         this.notifySubscribers();
@@ -64,7 +53,18 @@ export class AuthorizeService {
         this._subscriptions = this._subscriptions.splice(subscriptionIndex[0].index, 1);
     }
 
-    notifySubscribers() {
+    private async fetchUser(): Promise<Nullable<UserModel>> {
+        try {
+            const response = await fetch("/user/info");
+            const user: UserModel = await response.json();
+            return user;
+        } catch (e) {
+            console.error("Could not fetch user", e);
+            return null;
+        }
+    }
+
+    private notifySubscribers() {
         for (let i = 0; i < this._subscriptions.length; i++) {
             const callback = this._subscriptions[i].callback;
             callback();

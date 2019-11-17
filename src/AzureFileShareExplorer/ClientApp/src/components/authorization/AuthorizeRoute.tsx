@@ -1,6 +1,6 @@
-﻿import React from "react";
-import { RouteProps, Route, Redirect, RouteComponentProps } from "react-router";
-import authorizeService from "./AuthorizeService";
+﻿import React from 'react';
+import { RouteProps, Route } from 'react-router';
+import authorizeService from './AuthorizeService';
 
 interface AuthorizeRouteState {
     ready: boolean;
