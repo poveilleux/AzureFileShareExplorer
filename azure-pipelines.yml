@@ -6,9 +6,11 @@ trigger:
 resources:
 - repo: self
 
+# If you want to push an image is not master yet, you can set the 'PushBeta' variable
+# when running the pipeline from a dev branch.
 variables:
   DockerRepository: poveilleux5/azure-file-share-explorer
-  Version: 0.0.2
+  Version: 0.0.3
   IsMaster: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
 
 stages:
@@ -44,8 +46,8 @@ stages:
         tags: $(ImageTag)
 
     - task: Docker@2
-      condition: and(succeeded(), eq(variables['IsMaster'], true))
-      displayName: Push $(DockerRepository):$(ImageTag)
+      condition: and(succeeded(), or(eq(variables['IsMaster'], true), eq(variables['PushBeta'], true)))
+      displayName: Push $(DockerRepository)
       inputs:
         command: push
         containerRegistry: DockerHub
