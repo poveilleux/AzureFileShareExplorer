@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -77,10 +76,6 @@ namespace AzureFileShareExplorer
             {
                 endpoints.MapControllers();
             });
-
-            // TODO: Remove (+extension)?
-            // Ensures user is authenticated before accessing the SPA.
-            //app.EnforceAuthentication();
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
