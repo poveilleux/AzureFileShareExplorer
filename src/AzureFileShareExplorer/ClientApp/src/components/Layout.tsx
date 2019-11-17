@@ -32,7 +32,7 @@ const Layout: React.SFC = (props) => {
     return (
         <div>
             <Navbar bg="light">
-                <Navbar.Brand>Azure File Share Explorer</Navbar.Brand>
+                <Navbar.Brand href="/">Azure File Share Explorer</Navbar.Brand>
                 <Navbar.Toggle />
                 {
                     name ?
@@ -41,7 +41,7 @@ const Layout: React.SFC = (props) => {
                                 <Dropdown alignRight>
                                     <Dropdown.Toggle id="user-dropdown" as={NavLink}>{name}</Dropdown.Toggle>
                                     <Dropdown.Menu>
-                                        <Dropdown.Item>Sign out</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => authorizeService.signOut()}>Sign out</Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
                             </Nav>

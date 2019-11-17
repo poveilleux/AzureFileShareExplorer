@@ -1,6 +1,7 @@
 ﻿using AzureFileShareExplorer.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace AzureFileShareExplorer.Controllers
 {
@@ -29,6 +30,13 @@ namespace AzureFileShareExplorer.Controllers
             {
                 RedirectUri = returnUrl ?? "~/"
             });
+        }
+
+        [HttpGet("signout")]
+        public async Task<IActionResult> SignOut()
+        {
+            await HttpContext.SignOutAsync();
+            return Ok();
         }
     }
 }
