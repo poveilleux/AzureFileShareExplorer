@@ -12,6 +12,8 @@ export function useAzureFileShare(currentLocation: string): [TreeElementModel[],
     const [data, setData] = useState<TreeElementModel[]>([]);
 
     useEffect(() => {
+        let subscribed = true;
+
         const fetchData = async () => {
             setIsLoading(true);
 
@@ -19,7 +21,9 @@ export function useAzureFileShare(currentLocation: string): [TreeElementModel[],
                 const response = await fetch(`/api${currentLocation}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setData(data.map((d: ITreeElementModel) => TreeElementModel.create(d)));
+                    if (subscribed) {
+                        setData(data.map((d: ITreeElementModel) => TreeElementModel.create(d)));
+                    }
                 } else if (response.status === 401) {
                     // Nullify the current user?
                     setHasError(true);
@@ -34,6 +38,10 @@ export function useAzureFileShare(currentLocation: string): [TreeElementModel[],
         };
 
         fetchData();
+
+        return function cleanup() {
+            subscribed = false;
+        };
     }, [currentLocation]);
 
     return [data, isLoading, hasError];
