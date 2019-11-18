@@ -31,6 +31,11 @@ export class AuthorizeService {
         return this._user;
     }
 
+    async signOut(): Promise<void> {
+        await fetch("/user/signout");
+        window.location.href = "/signedout"; // Forces a refresh of the page.
+    }
+
     updateState(user: Nullable<UserModel>) {
         this._user = user;
         this.notifySubscribers();
