@@ -55,3 +55,6 @@ Easily explore your Azure File shares with the Azure File Share Explorer.
    ```
    
    You can then access the application at http://localhost:5000.
+
+## Deploy to Kubernetes using Helm
+To deploy to Kubernetes using Helm, look at [this documentation](./chart/azure-file-share-explorer)
