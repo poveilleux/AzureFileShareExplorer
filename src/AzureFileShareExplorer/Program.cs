@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace AzureFileShareExplorer
 {
@@ -13,6 +14,10 @@ namespace AzureFileShareExplorer
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, builder) => builder
+                    .AddJsonFile("appsettings.from-deployment.json", reloadOnChange: true, optional: true)
+                    .AddJsonFile("appsettings.from-secret.json", reloadOnChange: true, optional: true)
+                )
                 .UseStartup<Startup>();
         }
     }

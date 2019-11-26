@@ -31,22 +31,30 @@ Easily explore your Azure File shares with the Azure File Share Explorer.
      "Storage:ShareName": ""
    }
    ```
+   Alternatively, you can also run the following commands from the `src/AzureFileShareExplorer` directory
+   ```sh
+   dotnet user-secrets set "Storage:ConnectionString" "<connection-string>"
+   dotnet user-secrets set "Storage:ShareName" "<share-name>"
+   ```
 
 ## Build and run with Docker
-To build with Docker, run the following command from the root of the repository:
+1. To build with Docker, run the following command from the root of the repository:
 
-```
-docker build -t azure-file-share-explorer .
-```
+   ```
+   docker build -t azure-file-share-explorer .
+   ```
 
-To run with Docker, use the following command:
+2. To run with Docker, use the following command:
 
-```
-docker run \
-  -p 5000:80 \
-  -e Storage__ConnectionString=<connection-string> \
-  -e Storage__ShareName=<share-name> \
-  -it azure-file-share-explorer
-```
+   ```
+   docker run \
+     -p 5000:80 \
+     -e Storage__ConnectionString=<connection-string> \
+     -e Storage__ShareName=<share-name> \
+     -it azure-file-share-explorer
+   ```
+   
+   You can then access the application at http://localhost:5000.
 
-You can then access the application at http://localhost:5000.
+## Deploy to Kubernetes using Helm
+To deploy to Kubernetes using Helm, look at [this documentation](./chart/azure-file-share-explorer)

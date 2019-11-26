@@ -2,16 +2,28 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+secretValues:
+  azureAd:  
+    clientId:
+    clientSecret: 
+  storage:
+    connectionString:
+    shareName:
+
+appsettings:
+  azureAd:
+    enabled: false
+    authority:
+    getClaimsFromUserInfoEndpoint: true
+    tokenValidationParameters:
+      validIssuers: []
 
 image:
   repository: azure-file-share-explorer
-  tag: 0.0.2-beta
+  tag: 0.0.3-beta
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -19,17 +31,6 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
 
 service:
   type: ClusterIP
