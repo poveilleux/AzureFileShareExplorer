@@ -18,11 +18,9 @@ appsettings:
     tokenValidationParameters:
       validIssuers: []
 
-replicaCount: 1
-
 image:
   repository: azure-file-share-explorer
-  tag: 0.0.2-beta
+  tag: 0.0.3-beta
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
