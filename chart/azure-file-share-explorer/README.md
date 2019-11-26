@@ -1,4 +1,24 @@
 # azure-file-share-explorer
+Easily explore your Azure File shares with the Azure File Share Explorer.
+
+## Prerequisites
+- Kubernetes 1.16+
+- Helm 2.15+
+
+## Installing the Chart
+To install the chart with the release name `my-release`, run:
+
+```sh
+$ helm install azure-file-share-explorer --name my-release \
+    --set secretValues.storage.connectionString="<connection-string>" \
+    --set secretValues.storage.shareName="<share-name>"
+```
+
+## Uninstalling the Chart
+To uninstall/delete the `my-release` deployment, run:
+```sh
+$ helm delete my-release
+```
 
 ## Configuration
 The following table lists the configurable parameters of the azure-file-share-explorer chart and their default values.
