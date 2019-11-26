@@ -14,7 +14,7 @@ $ helm install azure-file-share-explorer --name my-release \
     --set secretValues.storage.shareName="<share-name>"
 ```
 
-To install the chart and secure the Azure File Share Explorer with Azure AD, run after having registered the application (see [this](../../)):
+To install the chart and secure the Azure File Share Explorer with Azure AD, run after having registered the application:
 
 ```sh
 $ helm install azure-file-share-explorer --name my-release \
