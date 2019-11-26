@@ -14,6 +14,18 @@ $ helm install azure-file-share-explorer --name my-release \
     --set secretValues.storage.shareName="<share-name>"
 ```
 
+To install the chart and secure the Azure File Share Explorer with Azure AD, run after having registered the application (see [this](../README.md#Use-Azure-Active-Directory-to-secure-the-Azure-File-Share-Explorer)):
+
+```sh
+$ helm install azure-file-share-explorer --name my-release \
+    --set secretValues.storage.connectionString="<connection-string>" \
+    --set secretValues.storage.shareName="<share-name>" \
+    --set appsettings.azureAd.enabled=true \
+    --set appsettings.azureAd.authority="https://login.microsoftonline.com/<tenantid>/v2.0" \
+    --set secretValues.azureAd.clientId="<app-client-id>" \
+    --set secretValues.azureAd.clientSecret="<app-client-secret>"
+```
+
 ## Uninstalling the Chart
 To uninstall/delete the `my-release` deployment, run:
 ```sh

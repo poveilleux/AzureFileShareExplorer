@@ -58,3 +58,6 @@ Easily explore your Azure File shares with the Azure File Share Explorer.
 
 ## Deploy to Kubernetes using Helm
 To deploy to Kubernetes using Helm, look at [this documentation](./chart/azure-file-share-explorer)
+
+## Use Azure Active Directory to secure the Azure File Share Explorer
+To use Azure Active Directory with the Azure File Share Explorer, you need to [register the application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) with Azure AD. After registering the application, you will need to add `https://<host>/signin-oidc` as a redirect URI for the application to function properly. Also, you will need to generate a client secret in order to authenticate with Azure AD.
