@@ -19,7 +19,7 @@ appsettings:
       validIssuers: []
 
 image:
-  repository: azure-file-share-explorer
+  repository: poveilleux/azure-file-share-explorer
   tag: 0.0.3-beta
   pullPolicy: IfNotPresent
 
