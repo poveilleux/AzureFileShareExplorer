@@ -17,24 +17,29 @@ namespace AzureFileShareExplorer.Controllers
     [Route("api")]
     public class FilesController : Controller
     {
-        private readonly IOptionsMonitor<StorageSettings> _settings;
+        private readonly IOptionsMonitor<AzureAdSettings> _azureAdSettings;
 
-        private StorageSettings Settings => _settings.CurrentValue;
+        private readonly IOptionsMonitor<StorageSettings> _storageSettings;
 
-        public FilesController(IOptionsMonitor<StorageSettings> settings)
+        private AzureAdSettings AzureAdSettings => _azureAdSettings.CurrentValue;
+
+        private StorageSettings StorageSettings => _storageSettings.CurrentValue;
+
+        public FilesController(IOptionsMonitor<AzureAdSettings> azureAdSettings, IOptionsMonitor<StorageSettings> storageSettings)
         {
-            _settings = settings;
+            _azureAdSettings = azureAdSettings;
+            _storageSettings = storageSettings;
         }
 
         [HttpGet("{*queryvalues}")]
         public async Task<IActionResult> GetFiles(string queryValues, [FromQuery] bool? download)
         {
-            if (!User.Identity.IsAuthenticated)
+            if (AzureAdSettings.Enabled && !User.Identity.IsAuthenticated)
             {
                 return Unauthorized();
             }
 
-            CloudFileShare cloudFleShare = GetFileShare(Settings.ShareName);
+            CloudFileShare cloudFleShare = GetFileShare(StorageSettings.ShareName);
 
             queryValues ??= string.Empty;
 
@@ -81,7 +86,7 @@ namespace AzureFileShareExplorer.Controllers
 
         private CloudFileShare GetFileShare(string shareName)
         {
-            var cloudStorageAccount = CloudStorageAccount.Parse(Settings.ConnectionString);
+            var cloudStorageAccount = CloudStorageAccount.Parse(StorageSettings.ConnectionString);
             CloudFileClient client = cloudStorageAccount.CreateCloudFileClient();
             return client.GetShareReference(shareName);
         }

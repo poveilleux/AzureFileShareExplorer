@@ -37,6 +37,7 @@ namespace AzureFileShareExplorer
             services.AddTransient<IStartupFilter, ConfigurationValidator>();
 
             services.ConfigureAndValidate<StorageSettings>(_configuration, StorageSettings.Name);
+            services.Configure<AzureAdSettings>(_configuration.GetSection(AzureAdSettings.Name));
 
             services.AddAuthorization();
             AddAuthenticationServices(services);
