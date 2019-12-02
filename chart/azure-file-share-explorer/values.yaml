@@ -3,9 +3,9 @@
 # Declare variables to be passed into your templates.
 
 secretValues:
-  azureAd:  
+  azureAd:
     clientId:
-    clientSecret: 
+    clientSecret:
   storage:
     connectionString:
     shareName:

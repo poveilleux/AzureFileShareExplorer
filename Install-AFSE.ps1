@@ -6,24 +6,38 @@ param(
     [string]$ShareName,
 
     [Parameter()]
-    [bool]$DryRun
+    [string]$ReleaseName = "azure-file-share-explorer",
+
+    [Parameter()]
+    [string]$ClientId,
+
+    [Parameter()]
+    [string]$ClientSecret,
+
+    [Parameter()]
+    [switch]$DryRun
 )
 
-$releaseName = "azure-file-share-explorer"
 $chart = "./chart/azure-file-share-explorer"
 
 $arguments = @(
-    "--set secretValues.storage.connectionString=$ConnectionString",
-    "--set secretValues.storage.shareName=$ShareName",
-    "--set imagePullSecrets[0].name=dockerhub",
-    "--set service.type=NodePort",
-    "--namespace afse",
+    "--set=secretValues.storage.connectionString=$ConnectionString",
+    "--set=secretValues.storage.shareName=$ShareName",
+    "--set=imagePullSecrets[0].name=dockerhub",
+    "--set=service.type=NodePort",
+    "--namespace=afse",
     "--debug"
 )
 
+if ($ClientId -or $ClientSecret) {
+    $arguments += "--set=appsettings.azureAd.enabled=true"
+    $arguments += "--set=secretValues.azureAd.clientId=$ClientId"
+    $arguments += "--set=secretValues.azureAd.clientSecret=$ClientSecret"
+}
+
 if ($DryRun) {
-    helm template --name-template $releaseName @arguments $chart
+    helm template --name-template $ReleaseName @arguments $chart
 }
 else {
-    helm upgrade @arguments --wait --timeout 5m0s --install $releaseName $chart
+    helm upgrade $arguments --wait --timeout 5m0s --install $ReleaseName $chart
 }
