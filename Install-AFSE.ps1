@@ -10,24 +10,20 @@ param(
 )
 
 $releaseName = "azure-file-share-explorer"
+$chart = "./chart/azure-file-share-explorer"
+
+$arguments = @(
+    "--set secretValues.storage.connectionString=$ConnectionString",
+    "--set secretValues.storage.shareName=$ShareName",
+    "--set imagePullSecrets[0].name=dockerhub",
+    "--set service.type=NodePort",
+    "--namespace afse",
+    "--debug"
+)
 
 if ($DryRun) {
-    helm template --name-template $releaseName `
-        --set secretValues.storage.connectionString=$ConnectionString `
-        --set secretValues.storage.shareName=$ShareName `
-        --set imagePullSecrets[0].name=dockerhub `
-        --set service.type=NodePort `
-        --namespace afse `
-        --debug `
-        ./chart/azure-file-share-explorer
+    helm template --name-template $releaseName @arguments $chart
 }
 else {
-    helm upgrade `
-        --set secretValues.storage.connectionString=$ConnectionString `
-        --set secretValues.storage.shareName=$ShareName `
-        --set imagePullSecrets[0].name=dockerhub `
-        --set service.type=NodePort `
-        --namespace afse `
-        --debug --wait --timeout 5m0s `
-        --install $releaseName ./chart/azure-file-share-explorer
+    helm upgrade @arguments --wait --timeout 5m0s --install $releaseName $chart
 }
