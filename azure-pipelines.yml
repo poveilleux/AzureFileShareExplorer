@@ -10,7 +10,7 @@ resources:
 # when running the pipeline from a dev branch.
 variables:
   DockerRepository: poveilleux5/azure-file-share-explorer
-  Version: 0.0.3
+  Version: 0.0.4
   IsMaster: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
 
 stages:
