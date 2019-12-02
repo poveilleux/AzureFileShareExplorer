@@ -9,7 +9,7 @@ resources:
 # If you want to push an image is not master yet, you can set the 'PushBeta' variable
 # when running the pipeline from a dev branch.
 variables:
-  DockerRepository: poveilleux5/azure-file-share-explorer
+  DockerRepository: poveilleux/azure-file-share-explorer
   Version: 0.0.4
   IsMaster: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
 
