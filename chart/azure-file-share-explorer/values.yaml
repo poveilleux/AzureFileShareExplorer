@@ -3,9 +3,9 @@
 # Declare variables to be passed into your templates.
 
 secretValues:
-  azureAd:  
+  azureAd:
     clientId:
-    clientSecret: 
+    clientSecret:
   storage:
     connectionString:
     shareName:
@@ -19,8 +19,8 @@ appsettings:
       validIssuers: []
 
 image:
-  repository: azure-file-share-explorer
-  tag: 0.0.3-beta
+  repository: poveilleux/azure-file-share-explorer
+  tag: 0.0.4-beta
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
