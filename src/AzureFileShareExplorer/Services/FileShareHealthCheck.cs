@@ -32,9 +32,12 @@ namespace AzureFileShareExplorer.Services
                 CloudFileClient client = storageAccount.CreateCloudFileClient();
                 CloudFileShare fileShare = client.GetShareReference(Settings.ShareName);
 
-                return await fileShare.ExistsAsync(ct)
-                    ? HealthCheckResult.Healthy()
-                    : HealthCheckResult.Degraded("File share does not exist");
+                if (await fileShare.ExistsAsync(ct))
+                {
+                    return HealthCheckResult.Healthy();
+                }
+
+                return HealthCheckResult.Unhealthy("File share does not exist");
             }
             catch (Exception e)
             {
