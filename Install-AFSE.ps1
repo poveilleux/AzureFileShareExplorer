@@ -15,6 +15,9 @@ param(
     [string]$ClientSecret,
 
     [Parameter()]
+    [string]$ImageTag,
+
+    [Parameter()]
     [switch]$DryRun
 )
 
@@ -35,9 +38,13 @@ if ($ClientId -or $ClientSecret) {
     $arguments += "--set=secretValues.azureAd.clientSecret=$ClientSecret"
 }
 
+if ($ImageTag) {
+    $arguments += "--set=image.tag=$ImageTag"
+}
+
 if ($DryRun) {
     helm template --name-template $ReleaseName @arguments $chart
 }
 else {
-    helm upgrade $arguments --wait --timeout 5m0s --install $ReleaseName $chart
+    helm upgrade $arguments --wait --timeout 3m0s --install $ReleaseName $chart
 }
