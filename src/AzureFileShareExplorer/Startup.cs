@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Logging;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AzureFileShareExplorer.Services;
 
 namespace AzureFileShareExplorer
 {
@@ -53,6 +54,9 @@ namespace AzureFileShareExplorer
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddHealthChecks()
+                .AddCheck<FileShareHealthCheck>("file_share_check");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +79,7 @@ namespace AzureFileShareExplorer
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/healthz");
                 endpoints.MapControllers();
             });
 

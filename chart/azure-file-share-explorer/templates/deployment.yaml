@@ -31,12 +31,20 @@ spec:
             protocol: TCP
         livenessProbe:
           httpGet:
-            path: /
+            path: /healthz
             port: http
+          failureThreshold: 3
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
-            path: /
+            path: /healthz
             port: http
+          failureThreshold: 3
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
