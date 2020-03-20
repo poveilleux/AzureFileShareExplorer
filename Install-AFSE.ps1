@@ -15,6 +15,9 @@ param(
     [string]$ClientSecret,
 
     [Parameter()]
+    [string]$ImageTag,
+
+    [Parameter()]
     [switch]$DryRun
 )
 
@@ -37,6 +40,10 @@ if ($ClientId -and $ClientSecret) {
     $arguments += "--set=appsettings.azureAd.authority=https://login.microsoftonline.com/b8fdc25b-8533-46b2-8ee2-acd69a4cb5df/v2.0"
     $arguments += "--set=secretValues.azureAd.clientId=$ClientId"
     $arguments += "--set=secretValues.azureAd.clientSecret=$ClientSecret"
+}
+
+if ($ImageTag) {
+    $arguments += "--set=image.tag=$ImageTag"
 }
 
 if ($DryRun) {
