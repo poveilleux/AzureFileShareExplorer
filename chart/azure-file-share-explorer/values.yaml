@@ -20,8 +20,8 @@ appsettings:
 
 image:
   repository: poveilleux/azure-file-share-explorer
-  tag: 0.0.4-beta
-  pullPolicy: IfNotPresent
+  tag: 0.0.5-beta
+  pullPolicy: Always
 
 imagePullSecrets: []
 
