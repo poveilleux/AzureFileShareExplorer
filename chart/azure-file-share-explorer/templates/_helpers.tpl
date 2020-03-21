@@ -36,6 +36,7 @@ Common labels
 */}}
 {{- define "azure-file-share-explorer.labels" -}}
 app.kubernetes.io/name: {{ include "azure-file-share-explorer.name" . }}
+app: {{ include "azure-file-share-explorer.name" . }}
 helm.sh/chart: {{ include "azure-file-share-explorer.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}
