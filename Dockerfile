@@ -13,7 +13,7 @@ RUN npm run build
 # ==================================
 #          Backend build
 # ==================================
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build-backend
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-backend
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
@@ -27,7 +27,7 @@ RUN dotnet publish -c Release -o out
 # ==================================
 #           Runtime image
 # ==================================
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
 COPY --from=build-backend /app/out .
 COPY --from=build-frontend /app/build ./ClientApp/build

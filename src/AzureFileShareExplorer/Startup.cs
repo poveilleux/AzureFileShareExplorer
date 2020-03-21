@@ -69,7 +69,6 @@ namespace AzureFileShareExplorer
             });
 
             app.UseAuthentication();
-            app.UseAuthorization();
 
             if (_environment.IsDevelopment())
             {
@@ -83,6 +82,7 @@ namespace AzureFileShareExplorer
             }
 
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/healthz");
