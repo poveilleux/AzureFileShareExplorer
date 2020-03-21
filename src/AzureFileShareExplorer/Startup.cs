@@ -1,4 +1,5 @@
 ﻿using AzureFileShareExplorer.Extensions;
+using AzureFileShareExplorer.Services;
 using AzureFileShareExplorer.Settings;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -10,10 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using System;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AzureFileShareExplorer.Services;
+using System.Threading.Tasks;
 
 namespace AzureFileShareExplorer
 {
@@ -119,6 +121,13 @@ namespace AzureFileShareExplorer
             .AddOpenIdConnect(options =>
             {
                 azureAdSettings.Bind(options);
+                
+                options.Events.OnTicketReceived = context =>
+                {
+                    context.Properties.IsPersistent = true;
+                    context.Properties.ExpiresUtc = DateTime.UtcNow.AddHours(1);
+                    return Task.CompletedTask;
+                };
             });
         }
     }
