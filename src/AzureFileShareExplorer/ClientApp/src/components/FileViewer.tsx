@@ -13,13 +13,17 @@ interface FileViewerProps {
 }
 
 const FileViewer: React.SFC<FileViewerProps> = (props) => {
+    const fetchOptions: RequestInit = {
+        credentials: "same-origin"
+    };
+
     return (
         <div className="file-viewer">
             <Modal show={!!props.url} onHide={props.onHide} dialogClassName="file-viewer-modal">
                 <ModalBody>
                     {
                         props.url
-                            ? <LazyLog url={props.url} selectableLines enableSearch extraLines={1} />
+                            ? <LazyLog url={props.url} selectableLines enableSearch extraLines={1} fetchOptions={fetchOptions} />
                             : null
                     }
                 </ModalBody>
