@@ -3,7 +3,7 @@
 Easily explore your Azure File shares with the Azure File Share Explorer.
 
 ## Install
-1. [Install .NET Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0), if not already installed
+1. [Install .NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1), if not already installed
 
 2. [Install node](https://nodejs.org/en/), if not already installed. This application has been tested with Node 10.16.0 and npm 6.9.0
 
