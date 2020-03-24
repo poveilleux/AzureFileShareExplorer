@@ -34,9 +34,9 @@ stages:
         echo "Version: $Version"
         echo "IsRelease: $IsRelease"
         ImageTag="$Version-beta"
-        if [[ $IsMaster = "False" ]]; then
+        if [[ ${IsMaster,,} = "false" ]]; then
           ImageTag="$Version-build-$BuildNumber"
-        elif [[ $IsRelease = "True" ]]; then
+        elif [ ${IsRelease,,} = "true" ]; then
           ImageTag="$Version"
         fi
         echo "ImageTag: $ImageTag"
