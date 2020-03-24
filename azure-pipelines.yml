@@ -58,7 +58,7 @@ stages:
         tags: $(ImageTag)
 
     - task: Docker@2
-      condition: and(succeeded(), or(eq(variables['IsMaster'], true), eq(variables['PushBeta'], true)))
+      condition: and(succeeded(), eq(variables['PushBeta'], true))
       displayName: Push $(DockerRepository)
       inputs:
         command: push
