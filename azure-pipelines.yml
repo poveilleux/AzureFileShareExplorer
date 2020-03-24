@@ -6,11 +6,19 @@ trigger:
 resources:
 - repo: self
 
-# If you want to push an image is not master yet, you can set the 'PushBeta' variable
-# when running the pipeline from a dev branch.
+# parameters:
+# - name: PushBeta
+#   displayName: Push beta image to container registry
+#   type: boolean
+#   defaultValue: false
+# - name: IsRelease
+#   displayName: Release candidate
+#   type: boolean
+#   defaultValue: false
+
 variables:
   DockerRepository: poveilleux/azure-file-share-explorer
-  Version: 0.0.5
+  Version: 1.0.0
   IsMaster: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
 
 stages:
@@ -24,17 +32,21 @@ stages:
     - script: |
         echo "IsMaster: $IsMaster"
         echo "Version: $Version"
+        echo "IsRelease: $IsRelease"
         ImageTag="$Version-beta"
-        if [[ $IsMaster = "False" ]]; then
+        if [[ ${IsMaster,,} = "false" ]]; then
           ImageTag="$Version-build-$BuildNumber"
+        elif [ ${IsRelease,,} = "true" ]; then
+          ImageTag="$Version"
         fi
-        echo "##vso[task.setvariable variable=ImageTag]$ImageTag"
         echo "ImageTag: $ImageTag"
+        echo "##vso[task.setvariable variable=ImageTag]$ImageTag"
       displayName: Compute image tag
       env:
         BuildNumber: $(Build.BuildNumber)
         IsMaster: $(IsMaster)
         Version: $(Version)
+        IsRelease: $(IsRelease)
 
     - task: Docker@2
       displayName: Build $(DockerRepository)
