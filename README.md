@@ -2,6 +2,8 @@
 
 Easily explore your Azure File shares with the Azure File Share Explorer.
 
+The Docker image is available on [Docker Hub](https://hub.docker.com/repository/docker/poveilleux/azure-file-share-explorer).
+
 ## Install
 1. [Install .NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1), if not already installed
 
