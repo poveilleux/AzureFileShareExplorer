@@ -15,10 +15,6 @@ parameters:
   displayName: Release candidate
   type: boolean
   default: false
-- name: PublicUrl
-  displayName: Public URL for React
-  type: string
-  default: ""
 
 variables:
   Version: 1.0.0
@@ -46,11 +42,12 @@ jobs:
       BuildNumber: $(Build.BuildNumber)
       IsMaster: $(IsMaster)
       Version: $(Version)
-      IsRelease: $(IsRelease)
+      IsRelease: ${{ parameters.IsRelease }}
   
   - template: azure-pipelines-build.yml
     parameters:
       containerRegistryServiceConnection: DockerHub
       repository: poveilleux/azure-file-share-explorer
-      pushCondition: and(succeeded(), eq(variables['PushImage'], true))
+      pushCondition: and(succeeded(), eq(${{ parameters.PushImage }}, true))
+      publicUrl: $(PublicUrl)
       imageTag: $(ImageTag)
