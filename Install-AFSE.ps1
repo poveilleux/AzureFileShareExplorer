@@ -43,7 +43,7 @@ if ($ClientId -and $ClientSecret -and $Authority) {
     $arguments += "--set=appsettings.azureAd.authority=$Authority"
     $arguments += "--set=secretValues.azureAd.clientId=$ClientId"
     $arguments += "--set=secretValues.azureAd.clientSecret=$ClientSecret"
-} else if ($ClientId -or $ClientSecret -or $Authority) {
+} elseif ($ClientId -or $ClientSecret -or $Authority) {
     Write-Host "Azure AD not enabled because -ClientId and/or -ClientSecret and/or -Authority is not set"
 }
 
