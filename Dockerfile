@@ -8,6 +8,7 @@ ARG PUBLIC_URL=""
 
 COPY src/AzureFileShareExplorer/ClientApp/package.json src/AzureFileShareExplorer/ClientApp/package-lock.json ./
 RUN npm install
+RUN npm install -g cross-env
 
 COPY src/AzureFileShareExplorer/ClientApp/. ./
 RUN cross-env PUBLIC_URL=$PUBLIC_URL npm run build
