@@ -1,0 +1,40 @@
+parameters:
+  containerRegistryServiceConnection:
+  repository:
+  pushCondition:
+  imageTag:
+  dockerfile: $(Build.SourcesDirectory)/Dockerfile
+  publicUrl: ""
+  artifactPath: $(Build.ArtifactStagingDirectory)
+
+steps:
+- task: Docker@2
+  displayName: Build ${{ parameters.repository }}
+  inputs:
+    command: build
+    containerRegistry: ${{ parameters.containerRegistryServiceConnection }}
+    repository: ${{ parameters.repository }}
+    dockerfile: ${{ parameters.dockerfile }}
+    tags: ${{ parameters.imageTag }}
+    arguments: --build-arg PUBLIC_URL=${{ parameters.publicUrl }}
+
+- task: Docker@2
+  condition: ${{ parameters.pushCondition }}
+  displayName: Push ${{ parameters.repository }}
+  inputs:
+    command: push
+    containerRegistry: ${{ parameters.containerRegistryServiceConnection }}
+    repository: ${{ parameters.repository }}
+    tags: ${{ parameters.imageTag }}
+
+- script: |
+    helm init --client-only
+    helm package azure-file-share-explorer --destination ${{ parameters.artifactPath }} --app-version ${{ parameters.imageTag }}
+  displayName: Package helm chart
+  workingDirectory: chart/
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish artifacts
+  inputs:
+    pathtoPublish: ${{ parameters.artifactPath }}
+    artifactName: drop

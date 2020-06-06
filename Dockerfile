@@ -4,11 +4,13 @@
 FROM node:12.13.0-alpine as build-frontend
 WORKDIR /app
 
+ARG PUBLIC_URL=""
+
 COPY src/AzureFileShareExplorer/ClientApp/package.json src/AzureFileShareExplorer/ClientApp/package-lock.json ./
 RUN npm install
 
 COPY src/AzureFileShareExplorer/ClientApp/. ./
-RUN npm run build
+RUN cross-env PUBLIC_URL=$PUBLIC_URL npm run build
 
 # ==================================
 #          Backend build
