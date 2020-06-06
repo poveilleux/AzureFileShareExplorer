@@ -20,7 +20,7 @@ namespace AzureFileShareExplorer.Settings
         {
             var errorMessages = new List<string>();
 
-            foreach (var validatableConfiguration in _validatableConfigurations)
+            foreach (IValidatableObject validatableConfiguration in _validatableConfigurations)
             {
                 var context = new ValidationContext(validatableConfiguration, serviceProvider: null, items: null);
                 var results = new List<ValidationResult>();
@@ -32,7 +32,7 @@ namespace AzureFileShareExplorer.Settings
 
             if (errorMessages.Any())
             {
-                throw new Exception($"Some configuration are not valid: {string.Join(Environment.NewLine, errorMessages)}");
+                throw new Exception($"Some configuration are not valid: {Environment.NewLine}{string.Join(Environment.NewLine, errorMessages)}");
             }
 
             return next;
