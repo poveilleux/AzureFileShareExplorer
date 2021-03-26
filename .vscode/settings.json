@@ -3,6 +3,7 @@
     "source.fixAll.eslint": true
   },
   "editor.comments.insertSpace": true,
+  "files.insertFinalNewline": true,
   "[typescript]": {
     "editor.detectIndentation": false,
     "editor.insertSpaces": true,
