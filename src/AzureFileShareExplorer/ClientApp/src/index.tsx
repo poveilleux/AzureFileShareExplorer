@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import './index.scss';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import 'src/index.scss';
+import App from 'src/App';
+import * as serviceWorker from 'src/serviceWorker';
 
 const rootElement = document.getElementById('root');
 

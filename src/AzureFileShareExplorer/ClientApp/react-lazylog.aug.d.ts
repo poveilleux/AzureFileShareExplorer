@@ -1,5 +1,5 @@
 ﻿import 'react-lazylog';
-import { Component, ReactNode, CSSProperties } from 'react';
+import React from 'react';
 
 declare module 'react-lazylog' {
     export interface LazyLogProps {
@@ -12,21 +12,21 @@ declare module 'react-lazylog' {
         scrollToLine?: number;
         highlight?: number | number[];
         selectableLines?: boolean;
-        formatPart?: (text: string) => ReactNode;
+        formatPart?: (text: string) => React.ReactNode;
         onLoad?: () => any;
         onError?: (error: any) => any;
         onHighlight?: (range: Range) => any;
         rowHeight?: number;
         overscanRowCount?: number;
-        containerStyle?: CSSProperties;
-        style?: CSSProperties;
+        containerStyle?: React.CSSProperties;
+        style?: React.CSSProperties;
 
         // additional properties
         enableSearch?: boolean;
         extraLines?: number;
     }
 
-    export class LazyLog extends Component<LazyLogProps> {
+    export class LazyLog extends React.Component<LazyLogProps> {
         static defaultProps: Partial<LazyLogProps>;
     }
 
