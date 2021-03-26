@@ -107,9 +107,9 @@ namespace AzureFileShareExplorer
 
         private void AddAuthenticationServices(IServiceCollection services)
         {
-            var azureAdSettings = _configuration.GetSection(AzureAdSettings.Name);
+            var azureAdSection = _configuration.GetSection(AzureAdSettings.Name);
 
-            if (!azureAdSettings.Get<AzureAdSettings>().Enabled)
+            if (!azureAdSection.Get<AzureAdSettings>().Enabled)
                 return;
 
             services.AddAuthentication(options =>
@@ -120,8 +120,8 @@ namespace AzureFileShareExplorer
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                azureAdSettings.Bind(options);
-                
+                azureAdSection.Bind(options);
+
                 options.Events.OnTicketReceived = context =>
                 {
                     context.Properties.IsPersistent = true;
