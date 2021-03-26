@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavLink from 'react-bootstrap/NavLink';
-import authorizeService from './authorization/AuthorizeService';
 
-const Layout: React.SFC = (props) => {
-    const [name, setName] = useState("");
+import authorizeService from 'src/components/authorization/AuthorizeService';
+
+const Layout: React.FC = (props) => {
+    const [name, setName] = React.useState("");
 
     // Subscribe to name updates.
-    useEffect(() => {
+    React.useEffect(() => {
         const subscriptionId = authorizeService.subscribe(() => setName(""))
         return function cleanup() {
             authorizeService.unsubscribe(subscriptionId);
@@ -18,7 +19,7 @@ const Layout: React.SFC = (props) => {
     });
 
     // Load the current user's name.
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchName = async () => {
             const user = await authorizeService.getUser();
             if (user) {

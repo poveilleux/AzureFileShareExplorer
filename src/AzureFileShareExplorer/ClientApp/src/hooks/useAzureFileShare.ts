@@ -1,5 +1,5 @@
-﻿import { useEffect, useState } from 'react';
-import { ITreeElementModel, TreeElementModel } from '../models/treeElementModel';
+﻿import React from 'react';
+import { ITreeElementModel, TreeElementModel } from 'src/models/treeElementModel';
 
 /**
  * Loads the files and folders from an Azure File Share.
@@ -7,11 +7,11 @@ import { ITreeElementModel, TreeElementModel } from '../models/treeElementModel'
  * @param currentLocation The location from which to load the files and folders.
  */
 export function useAzureFileShare(currentLocation: string): [TreeElementModel[], boolean, boolean] {
-    const [isLoading, setIsLoading] = useState(false);
-    const [hasError, setHasError] = useState(false);
-    const [data, setData] = useState<TreeElementModel[]>([]);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [hasError, setHasError] = React.useState(false);
+    const [data, setData] = React.useState<TreeElementModel[]>([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         let subscribed = true;
 
         const fetchData = async () => {

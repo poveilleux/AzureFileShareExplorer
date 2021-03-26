@@ -1,5 +1,6 @@
 import React from 'react';
-import './NavigationBar.scss';
+
+import 'src/components/NavigationBar.scss';
 import { locationToArray } from '../helpers/locationHelpers';
 
 interface NavigationBarProps {

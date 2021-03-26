@@ -3,9 +3,9 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import ModalBody from 'react-bootstrap/ModalBody';
-import './FileViewer.scss';
-
 import { LazyLog } from 'react-lazylog';
+
+import 'src/components/FileViewer.scss';
 
 interface FileViewerProps {
     url: string;

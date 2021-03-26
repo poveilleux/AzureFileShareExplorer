@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import useReactRouter from 'use-react-router';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Viewer from 'react-viewer';
-import TreeElement from './TreeElement';
-import NavigationBar from './NavigationBar';
-import { downloadFile } from '../helpers/fileHelpers';
-import { appendToLocation } from '../helpers/locationHelpers';
-import { useAzureFileShare } from '../hooks/useAzureFileShare';
-import { TreeElementModel, FileElementModel } from '../models/treeElementModel';
-import FileViewer from './FileViewer';
+import TreeElement from 'src/components/TreeElement';
+import NavigationBar from 'src/components/NavigationBar';
+import { downloadFile } from 'src/helpers/fileHelpers';
+import { appendToLocation } from 'src/helpers/locationHelpers';
+import { useAzureFileShare } from 'src/hooks/useAzureFileShare';
+import { TreeElementModel, FileElementModel } from 'src/models/treeElementModel';
+import FileViewer from 'src/components/FileViewer';
 
 function displayErrorMessage(): JSX.Element {
     const onClick = () => window.location.reload();
@@ -38,9 +38,9 @@ function getFilePath(currentLocation: string, file: FileElementModel | null, dow
 
 const FileExplorer: React.FC = () => {
     const { history, location } = useReactRouter();
-    const [isImageViewerVisible, setIsImageViewerVisible] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [activeFile, setActiveFile] = useState<FileElementModel | null>(null);
+    const [isImageViewerVisible, setIsImageViewerVisible] = React.useState(false);
+    const [activeIndex, setActiveIndex] = React.useState(0);
+    const [activeFile, setActiveFile] = React.useState<FileElementModel | null>(null);
 
     const currentLocation = decodeURIComponent(location.pathname);
     const [data, isLoading, hasError] = useAzureFileShare(currentLocation);
