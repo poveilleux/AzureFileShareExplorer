@@ -3,26 +3,33 @@
     "source.fixAll.eslint": true
   },
   "editor.comments.insertSpace": true,
+  "editor.insertSpaces": true,
   "files.insertFinalNewline": true,
+  "files.encoding": "utf8",
+  "files.eol": "\n",
   "[typescript]": {
     "editor.detectIndentation": false,
-    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+  },
+  "[typescriptreact]": {
+    "editor.detectIndentation": false,
     "editor.tabSize": 2,
   },
   "[javascript]": {
     "editor.detectIndentation": false,
-    "editor.insertSpaces": true,
     "editor.tabSize": 2,
   },
   "[json]": {
     "editor.detectIndentation": false,
-    "editor.insertSpaces": true,
     "editor.tabSize": 2,
   },
   "[jsonc]": {
     "editor.detectIndentation": false,
-    "editor.insertSpaces": true,
     "editor.tabSize": 2,
+  },
+  "[csharp]": {
+    "editor.detectIndentation": false,
+    "editor.tabSize": 4,
   },
   "terminal.integrated.cwd": "src/AzureFileShareExplorer/ClientApp"
 }
