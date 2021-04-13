@@ -1,11 +1,11 @@
-﻿using AzureFileShareExplorer.Extensions;
+﻿using Azure.Storage.Files.Shares;
+using Azure.Storage.Files.Shares.Models;
+using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Models;
 using AzureFileShareExplorer.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -38,26 +38,26 @@ namespace AzureFileShareExplorer.Controllers
                 return Unauthorized();
             }
 
-            CloudFileShare cloudFleShare = GetFileShare(StorageSettings.ShareName);
+            var shareClient = new ShareClient(StorageSettings.ConnectionString, StorageSettings.ShareName);
 
             queryValues ??= string.Empty;
 
             string[] segments = queryValues.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-            CloudFileDirectory currentDir = cloudFleShare.GetRootDirectoryReference();
-            List<IListFileItem> items = currentDir.ListFilesAndDirectories().ToList();
+            ShareDirectoryClient currentDir = shareClient.GetRootDirectoryClient();
+            List<ShareFileItem> items = await currentDir.GetFilesAndDirectoriesAsync().ToListAsync();
 
             for (int i = 0; i < segments.Length; ++i)
             {
                 string itemName = segments[i];
 
-                CloudFileDirectory? newDir = items.OfType<CloudFileDirectory>().FirstOrDefault(x => x.Name == itemName);
+                ShareFileItem? newDir = items.FirstOrDefault(x => x.Name == itemName && x.IsDirectory);
                 if (newDir is null)
                 {
                     // We only process the item as a file if it's the last segment.
                     if (i == segments.Length - 1)
                     {
-                        CloudFile? file = items.OfType<CloudFile>().FirstOrDefault(x => x.Name == itemName);
+                        ShareFileItem? file = items.FirstOrDefault(x => x.Name == itemName && !x.IsDirectory);
                         if (file is null)
                         {
                             return NotFound($"No file or directory {itemName} was not found under {currentDir.Name}");
@@ -68,14 +68,15 @@ namespace AzureFileShareExplorer.Controllers
                             Response.Headers.Add(HeaderNames.ContentDisposition, "attachment");
                         }
 
-                        return File(await file.OpenReadAsync(), GetContentType(file), true);
+                        ShareFileClient fileClient = currentDir.GetFileClient(file.Name);
+                        return File(await fileClient.OpenReadAsync(), GetContentType(file.Name), true);
                     }
 
                     return NotFound($"No directory {itemName} was not found under {currentDir.Name}");
                 }
 
-                currentDir = newDir;
-                items = currentDir.ListFilesAndDirectories().ToList();
+                currentDir = currentDir.GetSubdirectoryClient(newDir.Name);
+                items = await currentDir.GetFilesAndDirectoriesAsync().ToListAsync();
             }
 
             return Ok(items.Select(Convert)
@@ -83,32 +84,18 @@ namespace AzureFileShareExplorer.Controllers
                 .ThenBy(x => x.Name));
         }
 
-        private CloudFileShare GetFileShare(string shareName)
+        private static TreeElementModel Convert(ShareFileItem item)
         {
-            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(StorageSettings.ConnectionString);
-            CloudFileClient client = cloudStorageAccount.CreateCloudFileClient();
-            return client.GetShareReference(shareName);
+            return item.IsDirectory
+                ? TreeElementModel.NewFolder(item.Name)
+                : TreeElementModel.NewFile(item.Name, GetContentType(item.Name));
         }
 
-        private static TreeElementModel Convert(IListFileItem item)
+        private static string GetContentType(string fileName)
         {
-            if (item is CloudFileDirectory directory)
+            if (!new FileExtensionContentTypeProvider().TryGetContentType(fileName, out string contentType))
             {
-                return TreeElementModel.NewFolder(directory.Name);
-            }
-            if (item is CloudFile file)
-            {
-                return TreeElementModel.NewFile(file.Name, GetContentType(file));
-            }
-
-            throw new NotSupportedException($"Item type {item.GetType()} is not supported");
-        }
-
-        private static string GetContentType(CloudFile file)
-        {
-            if (!new FileExtensionContentTypeProvider().TryGetContentType(file.Name, out string contentType))
-            {
-                string extension = Path.GetExtension(file.Name);
+                string extension = Path.GetExtension(fileName);
 
                 switch (extension)
                 {

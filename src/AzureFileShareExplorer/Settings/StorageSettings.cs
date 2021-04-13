@@ -1,6 +1,6 @@
-﻿using Microsoft.Azure.Storage;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace AzureFileShareExplorer.Settings
 {
@@ -16,10 +16,7 @@ namespace AzureFileShareExplorer.Settings
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!CloudStorageAccount.TryParse(ConnectionString, out _))
-            {
-                yield return new ValidationResult($"The {Name}.{nameof(ConnectionString)} has an invalid value.");
-            }
+            return Enumerable.Empty<ValidationResult>();
         }
     }
 }

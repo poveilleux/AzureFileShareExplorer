@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Storage.Files.Shares;
 using AzureFileShareExplorer.Settings;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 
@@ -24,15 +23,8 @@ namespace AzureFileShareExplorer.Services
         {
             try
             {
-                if (!CloudStorageAccount.TryParse(Settings.ConnectionString, out CloudStorageAccount storageAccount))
-                {
-                    return HealthCheckResult.Unhealthy("Connection string is invalid");
-                }
-
-                CloudFileClient client = storageAccount.CreateCloudFileClient();
-                CloudFileShare fileShare = client.GetShareReference(Settings.ShareName);
-
-                if (await fileShare.ExistsAsync(cancellationToken))
+                var shareClient = new ShareClient(Settings.ConnectionString, Settings.ShareName);
+                if (await shareClient.ExistsAsync(cancellationToken))
                 {
                     return HealthCheckResult.Healthy();
                 }
