@@ -1,6 +1,7 @@
 ﻿using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Services;
 using AzureFileShareExplorer.Settings;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -11,9 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
-using System;
 using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -90,6 +89,18 @@ namespace AzureFileShareExplorer
             {
                 endpoints.MapHealthChecks("/healthz");
                 endpoints.MapControllers();
+            });
+
+            // Prevents users to access the SPA without proper authentication.
+            app.Use(async (context, next) =>
+            {
+                if (!context.User.IsAuthenticated())
+                {
+                    await context.ChallengeAsync();
+                    return;
+                }
+
+                await next();
             });
 
             app.UseStaticFiles();
