@@ -17,7 +17,7 @@ $ helm install azure-file-share-explorer --name my-release \
     --set secretValues.openIdConnect.clientSecret="<client-secret>"
 ```
 
-To install the chart and secure the Azure File Share Explorer with Azure AD, run after having registered the application. You will need to whitelist the `https://<host>/signin-oidc` redirect uri.
+To install the chart and secure the Azure File Share Explorer with Azure AD, run after having registered the application:
 
 ```sh
 $ helm install azure-file-share-explorer --name my-release \
@@ -41,9 +41,9 @@ The following table lists the configurable parameters of the azure-file-share-ex
 | --- | --- | --- |
 | `secretValues.storage.connectionString` | none | Mandatory. Connection string to the Azure Storage account containing your file share. |
 | `secretValues.storage.shareName` | none | Mandatory. Name of the file share you want to explore. |
-| `secretValues.openIdConnect.clientId` | none | Client ID to use to authenticate with the OpenID Connect authority |
-| `secretValues.openIdConnect.clientSecret` | none | Client secret to use to authenticate with the OpenID Connect authority |
-| `appsettings.openIdConnect.authority` | none | Authority URI to use to connect with the OpenID Connect server. |
+| `secretValues.openIdConnect.clientId` | none | Mandatory. Client ID to use to authenticate with the OpenID Connect authority |
+| `secretValues.openIdConnect.clientSecret` | none | Mandatory. Client secret to use to authenticate with the OpenID Connect authority |
+| `appsettings.openIdConnect.authority` | none | Mandatory. Authority URI to use to connect with the OpenID Connect server. |
 | `appsettings.openIdConnect.getClaimsFromUserInfoEndpoint` | `true` | Whether to get the user claims from UserInfo endpoint or not. |
 | `image.repository` | `azure-file-share-explorer` | Container image name. |
 | `image.tag` | `0.0.3-beta` | Container image tag. |
