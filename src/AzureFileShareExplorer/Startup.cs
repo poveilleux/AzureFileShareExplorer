@@ -78,69 +78,73 @@ namespace AzureFileShareExplorer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder rootApp)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            var pathBase = _configuration.GetValue<string>(ValueSettings.PathBase);
+            rootApp.Map(pathBase, app =>
             {
-                ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
-            });
-
-            app.UseAuthentication();
-
-            if (_environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseRouting();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHealthChecks("/healthz");
-                endpoints.MapControllers();
-            });
-
-            // Prevents users to access the SPA without proper authentication.
-            app.Use(async (context, next) =>
-            {
-                if (!context.User.IsAuthenticated())
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {
-                    await context.ChallengeAsync();
-                    return;
-                }
+                    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
+                });
 
-                var policyProvider = context.RequestServices.GetRequiredService<IAuthorizationPolicyProvider>();
-                var authorizationService = context.RequestServices.GetRequiredService<IAuthorizationService>();
-
-                AuthorizationPolicy defaultPolicy = await policyProvider.GetDefaultPolicyAsync();
-                AuthorizationResult authorizeResult = await authorizationService.AuthorizeAsync(context.User, defaultPolicy);
-                if (authorizeResult.Succeeded)
-                {
-                    await next();
-                    return;
-                }
-
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsync("Forbidden.");
-            });
-
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
+                app.UseAuthentication();
 
                 if (_environment.IsDevelopment())
                 {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
+                    app.UseDeveloperExceptionPage();
                 }
+                else
+                {
+                    app.UseExceptionHandler("/Error");
+                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                    app.UseHsts();
+                }
+
+                app.UseRouting();
+                app.UseAuthorization();
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapHealthChecks("/healthz");
+                    endpoints.MapControllers();
+                });
+
+                // Prevents users to access the SPA without proper authentication.
+                app.Use(async (context, next) =>
+                {
+                    if (!context.User.IsAuthenticated())
+                    {
+                        await context.ChallengeAsync();
+                        return;
+                    }
+
+                    var policyProvider = context.RequestServices.GetRequiredService<IAuthorizationPolicyProvider>();
+                    var authorizationService = context.RequestServices.GetRequiredService<IAuthorizationService>();
+
+                    AuthorizationPolicy defaultPolicy = await policyProvider.GetDefaultPolicyAsync();
+                    AuthorizationResult authorizeResult = await authorizationService.AuthorizeAsync(context.User, defaultPolicy);
+                    if (authorizeResult.Succeeded)
+                    {
+                        await next();
+                        return;
+                    }
+
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    await context.Response.WriteAsync("Forbidden.");
+                });
+
+                app.UseStaticFiles();
+                app.UseSpaStaticFiles();
+
+                app.UseSpa(spa =>
+                {
+                    spa.Options.SourcePath = "ClientApp";
+
+                // if (_environment.IsDevelopment())
+                // {
+                //     spa.UseReactDevelopmentServer(npmScript: "start");
+                // }
+                });
             });
         }
 

@@ -32,7 +32,7 @@ export class AuthorizeService {
     }
 
     async signOut(): Promise<void> {
-      await fetch("/user/signout");
+      await fetch(`${process.env.PUBLIC_URL}/user/signout`);
       window.location.href = "/signedout"; // Forces a refresh of the page.
     }
 
@@ -60,7 +60,7 @@ export class AuthorizeService {
 
     private async fetchUser(): Promise<Nullable<UserModel>> {
       try {
-        const response = await fetch("/user/info");
+        const response = await fetch(`${process.env.PUBLIC_URL}/user/info`);
         const user: UserModel = await response.json();
         return user;
       } catch (e) {

@@ -18,7 +18,7 @@ export function useAzureFileShare(currentLocation: string): [TreeElementModel[],
       setIsLoading(true);
 
       try {
-        const response = await fetch(`/api${currentLocation}`);
+        const response = await fetch(`${process.env.PUBLIC_URL}/api${currentLocation}`);
         if (response.ok) {
           const data = await response.json();
           if (subscribed) {

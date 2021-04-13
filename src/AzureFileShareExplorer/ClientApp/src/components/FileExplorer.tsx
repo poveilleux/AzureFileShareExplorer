@@ -33,7 +33,7 @@ function displayLoading(): JSX.Element {
 
 function getFilePath(currentLocation: string, file: FileElementModel | null, download?: boolean): string {
   return file
-    ? `/api${currentLocation}/${file.name}${download ? "?download=true" : ""}`
+    ? `${process.env.PUBLIC_URL}/api${currentLocation}/${file.name}${download ? "?download=true" : ""}`
     : "";
 }
 
@@ -44,7 +44,7 @@ const FileExplorer: React.FC = () => {
   const [activeFile, setActiveFile] = React.useState<FileElementModel | null>(null);
 
   const currentLocation = decodeURIComponent(location.pathname);
-  const [data, isLoading, hasError] = useAzureFileShare(currentLocation);
+  const [data, isLoading, hasError] = useAzureFileShare(currentLocation.replace(process.env.PUBLIC_URL, ""));
 
   const images = data
     .filter(x => x.isFile() && (x as FileElementModel).isImage())
