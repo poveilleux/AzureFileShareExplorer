@@ -1,0 +1,58 @@
+parameters:
+- name: containerRegistryServiceConnection
+  displayName: The container registry connection used to push the image
+  type: string
+- name: repository
+  displayName: The name of the repository where to push the image
+  type: string
+- name: imageTag
+  displayName: The image tag of the image
+  type: string
+- name: pushCondition
+  displayName: When to push the image to the container registry and when not to.
+  type: string
+  default: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+- name: dockerfile
+  displayName: Path to the Dockerfile
+  type: string
+  default: $(Build.SourcesDirectory)/Dockerfile
+- name: artifactPath
+  displayName: Path where output the artifacts
+  type: string
+  default: $(Build.ArtifactStagingDirectory)
+- name: publicUrl
+  displayName: Public URL to set for the React app
+  type: string
+  default: ""
+
+steps:
+- task: Docker@2
+  displayName: Build ${{ parameters.repository }}
+  inputs:
+    command: build
+    containerRegistry: ${{ parameters.containerRegistryServiceConnection }}
+    repository: ${{ parameters.repository }}
+    dockerfile: ${{ parameters.dockerfile }}
+    tags: ${{ parameters.imageTag }}
+    arguments: --build-arg PUBLIC_URL=${{ parameters.publicUrl }}
+
+- task: Docker@2
+  condition: ${{ parameters.pushCondition }}
+  displayName: Push ${{ parameters.repository }}
+  inputs:
+    command: push
+    containerRegistry: ${{ parameters.containerRegistryServiceConnection }}
+    repository: ${{ parameters.repository }}
+    tags: ${{ parameters.imageTag }}
+
+- script: |
+    helm init --client-only
+    helm package azure-file-share-explorer --destination ${{ parameters.artifactPath }} --app-version ${{ parameters.imageTag }}
+  displayName: Package helm chart
+  workingDirectory: chart/
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish artifacts
+  inputs:
+    pathtoPublish: ${{ parameters.artifactPath }}
+    artifactName: drop
