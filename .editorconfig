@@ -202,3 +202,6 @@ dotnet_diagnostic.CA1031.severity = suggestion
 [*.{yml,yaml}]
 indent_size = 2
 indent_style = space
+
+[*.{ts,tsx}]
+end_of_line = lf

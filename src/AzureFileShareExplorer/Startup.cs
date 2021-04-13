@@ -41,7 +41,7 @@ namespace AzureFileShareExplorer
             services.AddTransient<IStartupFilter, ConfigurationValidator>();
 
             services.ConfigureAndValidate<StorageSettings>(_configuration, StorageSettings.Name);
-            services.Configure<AzureAdSettings>(_configuration.GetSection(AzureAdSettings.Name));
+            services.Configure<OpenIdConnectSettings>(_configuration.GetSection(OpenIdConnectSettings.Name));
 
             services.AddAuthorization();
             AddAuthenticationServices(services);
@@ -107,10 +107,7 @@ namespace AzureFileShareExplorer
 
         private void AddAuthenticationServices(IServiceCollection services)
         {
-            var azureAdSection = _configuration.GetSection(AzureAdSettings.Name);
-
-            if (!azureAdSection.Get<AzureAdSettings>().Enabled)
-                return;
+            IConfigurationSection openIdSection = _configuration.GetSection(OpenIdConnectSettings.Name);
 
             services.AddAuthentication(options =>
             {
@@ -120,7 +117,7 @@ namespace AzureFileShareExplorer
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                azureAdSection.Bind(options);
+                openIdSection.Bind(options);
 
                 options.Events.OnTicketReceived = context =>
                 {

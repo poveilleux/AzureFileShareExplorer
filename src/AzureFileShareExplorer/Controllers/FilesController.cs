@@ -19,24 +19,19 @@ namespace AzureFileShareExplorer.Controllers
     [Route("api")]
     public class FilesController : Controller
     {
-        private readonly IOptionsMonitor<AzureAdSettings> _azureAdSettings;
-
         private readonly IOptionsMonitor<StorageSettings> _storageSettings;
-
-        private AzureAdSettings AzureAdSettings => _azureAdSettings.CurrentValue;
 
         private StorageSettings StorageSettings => _storageSettings.CurrentValue;
 
-        public FilesController(IOptionsMonitor<AzureAdSettings> azureAdSettings, IOptionsMonitor<StorageSettings> storageSettings)
+        public FilesController(IOptionsMonitor<StorageSettings> storageSettings)
         {
-            _azureAdSettings = azureAdSettings;
             _storageSettings = storageSettings;
         }
 
         [HttpGet("{*queryvalues}")]
         public async Task<IActionResult> GetFiles(string queryValues, [FromQuery] bool? download)
         {
-            if (AzureAdSettings.Enabled && !User.IsAuthenticated())
+            if (!User.IsAuthenticated())
             {
                 return Unauthorized();
             }

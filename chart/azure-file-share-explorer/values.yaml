@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 secretValues:
-  azureAd:
+  openIdConnect:
     clientId:
     clientSecret:
   storage:
@@ -11,8 +11,7 @@ secretValues:
     shareName:
 
 appsettings:
-  azureAd:
-    enabled: false
+  openIdConnect:
     authority:
     getClaimsFromUserInfoEndpoint: true
     tokenValidationParameters:
