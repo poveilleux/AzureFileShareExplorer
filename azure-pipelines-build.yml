@@ -1,7 +1,7 @@
 parameters:
   containerRegistryServiceConnection:
   repository:
-  pushCondition:
+  pushCondition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   imageTag:
   dockerfile: $(Build.SourcesDirectory)/Dockerfile
   publicUrl: ""

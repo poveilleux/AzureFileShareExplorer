@@ -17,13 +17,13 @@ parameters:
   default: false
 
 variables:
-  Version: 1.0.0
+  Version: 0.0.1
   IsMaster: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
 
 jobs:  
 - job: Build
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-latest
   steps:
   - script: |
       echo "IsMaster: $IsMaster"
