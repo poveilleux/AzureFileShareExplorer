@@ -20,7 +20,7 @@ namespace AzureFileShareExplorer.Services
             _settings = settings;
         }
 
-        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken ct = default)
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace AzureFileShareExplorer.Services
                 CloudFileClient client = storageAccount.CreateCloudFileClient();
                 CloudFileShare fileShare = client.GetShareReference(Settings.ShareName);
 
-                if (await fileShare.ExistsAsync(ct))
+                if (await fileShare.ExistsAsync(cancellationToken))
                 {
                     return HealthCheckResult.Healthy();
                 }

@@ -27,12 +27,12 @@ namespace AzureFileShareExplorer.Settings
 
                 Validator.TryValidateObject(validatableConfiguration, context, results, true);
 
-                errorMessages.AddRange(results.Select(x => x.ErrorMessage));
+                errorMessages.AddRange(results.Select(x => x.ErrorMessage ?? string.Empty));
             }
 
             if (errorMessages.Any())
             {
-                throw new Exception($"Some configuration are not valid: {string.Join(Environment.NewLine, errorMessages)}");
+                throw new InvalidConfigurationException(errorMessages);
             }
 
             return next;
