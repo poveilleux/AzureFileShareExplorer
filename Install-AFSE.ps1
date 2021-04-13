@@ -8,13 +8,13 @@ param(
     [Parameter()]
     [string]$ReleaseName = "azure-file-share-explorer",
 
-    [Parameter()]
+    [Parameter(Mandatory = $true)]
     [string]$Authority,
 
-    [Parameter()]
+    [Parameter(Mandatory = $true)]
     [string]$ClientId,
 
-    [Parameter()]
+    [Parameter(Mandatory = $true)]
     [string]$ClientSecret,
 
     [Parameter()]
@@ -30,6 +30,9 @@ param(
 $chart = "./chart/azure-file-share-explorer"
 
 $arguments = @(
+    "--set=appsettings.openIdConnect.authority=$Authority",
+    "--set=secretValues.openIdConnect.clientId=$ClientId",
+    "--set=secretValues.openIdConnect.clientSecret=$ClientSecret",
     "--set=secretValues.storage.connectionString=$ConnectionString",
     "--set=secretValues.storage.shareName=$ShareName",
     "--set=imagePullSecrets[0].name=dockerhub",
@@ -37,15 +40,6 @@ $arguments = @(
     "--namespace=afse",
     "--debug"
 )
-
-if ($ClientId -and $ClientSecret -and $Authority) {
-    $arguments += "--set=appsettings.azureAd.enabled=true"
-    $arguments += "--set=appsettings.azureAd.authority=$Authority"
-    $arguments += "--set=secretValues.azureAd.clientId=$ClientId"
-    $arguments += "--set=secretValues.azureAd.clientSecret=$ClientSecret"
-} elseif ($ClientId -or $ClientSecret -or $Authority) {
-    Write-Host "Azure AD not enabled because -ClientId and/or -ClientSecret and/or -Authority is not set"
-}
 
 if ($HostName) {
     $arguments += "--set=ingress.enabled=true"

@@ -1,60 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import Container from 'react-bootstrap/Container';
-import Dropdown from 'react-bootstrap/Dropdown';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavLink from 'react-bootstrap/NavLink';
-import authorizeService from './authorization/AuthorizeService';
+import React from "react";
+import Container from "react-bootstrap/Container";
+import Dropdown from "react-bootstrap/Dropdown";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavLink from "react-bootstrap/NavLink";
 
-const Layout: React.SFC = (props) => {
-    const [name, setName] = useState("");
+import authorizeService from "src/components/authorization/AuthorizeService";
 
-    // Subscribe to name updates.
-    useEffect(() => {
-        const subscriptionId = authorizeService.subscribe(() => setName(""))
-        return function cleanup() {
-            authorizeService.unsubscribe(subscriptionId);
-        };
-    });
+const Layout: React.FC = (props: React.PropsWithChildren<unknown>) => {
+  const [name, setName] = React.useState("");
 
-    // Load the current user's name.
-    useEffect(() => {
-        const fetchName = async () => {
-            const user = await authorizeService.getUser();
-            if (user) {
-                setName(user.name);
-            }
-        };
+  // Subscribe to name updates.
+  React.useEffect(() => {
+    const subscriptionId = authorizeService.subscribe(() => setName(""));
+    return function cleanup() {
+      authorizeService.unsubscribe(subscriptionId);
+    };
+  });
 
-        fetchName();
-    }, [name]);
+  // Load the current user's name.
+  React.useEffect(() => {
+    const fetchName = async () => {
+      const user = await authorizeService.getUser();
+      if (user) {
+        setName(user.name);
+      }
+    };
 
-    return (
-        <div>
-            <Navbar bg="light">
-                <Navbar.Brand href="/">Azure File Share Explorer</Navbar.Brand>
-                <Navbar.Toggle />
-                {
-                    name ?
-                        <Navbar.Collapse className="justify-content-end">
-                            <Nav>
-                                <Dropdown alignRight>
-                                    <Dropdown.Toggle id="user-dropdown" as={NavLink}>{name}</Dropdown.Toggle>
-                                    <Dropdown.Menu>
-                                        <Dropdown.Item onClick={() => authorizeService.signOut()}>Sign out</Dropdown.Item>
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </Nav>
-                        </Navbar.Collapse>
-                        : null
-                }
-            </Navbar>
+    fetchName();
+  }, [name]);
 
-            <Container className="mt-3">
-                {props.children}
-            </Container>
-        </div>
-    )
+  return (
+    <div>
+      <Navbar bg="light">
+        <Navbar.Brand href="/">Azure File Share Explorer</Navbar.Brand>
+        <Navbar.Toggle />
+        {
+          name ?
+            <Navbar.Collapse className="justify-content-end">
+              <Nav>
+                <Dropdown alignRight>
+                  <Dropdown.Toggle id="user-dropdown" as={NavLink}>{name}</Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => authorizeService.signOut()}>Sign out</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Nav>
+            </Navbar.Collapse>
+            : null
+        }
+      </Navbar>
+
+      <Container className="mt-3">
+        {props.children}
+      </Container>
+    </div>
+  );
 };
 
 export default Layout;

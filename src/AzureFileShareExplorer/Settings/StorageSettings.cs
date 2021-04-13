@@ -1,6 +1,6 @@
-﻿using Microsoft.Azure.Storage;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace AzureFileShareExplorer.Settings
 {
@@ -9,17 +9,14 @@ namespace AzureFileShareExplorer.Settings
         public const string Name = "Storage";
 
         [Required(ErrorMessage = "The " + Name + "." + nameof(ConnectionString) + " is required.")]
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "The " + Name + "." + nameof(ShareName) + " is required.")]
-        public string ShareName { get; set; }
+        public string ShareName { get; set; } = string.Empty;
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!CloudStorageAccount.TryParse(ConnectionString, out _))
-            {
-                yield return new ValidationResult($"The {Name}.{nameof(ConnectionString)} has an invalid value.");
-            }
+            return Enumerable.Empty<ValidationResult>();
         }
     }
 }

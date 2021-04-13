@@ -10,41 +10,41 @@ export interface ITreeElementModel {
 }
 
 export abstract class TreeElementModel {
-    constructor(public type: ElementType, public name: string) { }
+  constructor(public type: ElementType, public name: string) { }
 
-    static create(e: ITreeElementModel): TreeElementModel {
-        if (e.type === ElementType.Folder)
-            return new FolderElementModel(e.name);
-        else
-            return new FileElementModel(e.name, e.contentType);
-    }
+  static create(e: ITreeElementModel): TreeElementModel {
+    if (e.type === ElementType.Folder)
+      return new FolderElementModel(e.name);
+    else
+      return new FileElementModel(e.name, e.contentType);
+  }
 
-    public isFolder(): boolean {
-        return this.type === ElementType.Folder;
-    }
+  public isFolder(): boolean {
+    return this.type === ElementType.Folder;
+  }
 
-    public isFile(): boolean {
-        return this.type === ElementType.File;
-    }
+  public isFile(): boolean {
+    return this.type === ElementType.File;
+  }
 }
 
 export class FolderElementModel extends TreeElementModel {
-    constructor(name: string) {
-        super(ElementType.Folder, name);
-    }
+  constructor(name: string) {
+    super(ElementType.Folder, name);
+  }
 }
 
 export class FileElementModel extends TreeElementModel {
-    constructor(name: string, public contentType: string) {
-        super(ElementType.File, name);
-    }
+  constructor(name: string, public contentType: string) {
+    super(ElementType.File, name);
+  }
 
-    public isImage(): boolean {
-        return this.contentType.startsWith("image/");
-    }
+  public isImage(): boolean {
+    return this.contentType.startsWith("image/");
+  }
 
-    public isText(): boolean {
-        return this.contentType.startsWith("text/")
+  public isText(): boolean {
+    return this.contentType.startsWith("text/")
             || this.contentType === "application/log";
-    }
+  }
 }

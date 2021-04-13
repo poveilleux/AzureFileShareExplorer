@@ -1,48 +1,48 @@
-﻿import { useEffect, useState } from 'react';
-import { ITreeElementModel, TreeElementModel } from '../models/treeElementModel';
+import React from "react";
+import { ITreeElementModel, TreeElementModel } from "src/models/treeElementModel";
 
 /**
  * Loads the files and folders from an Azure File Share.
- * 
+ *
  * @param currentLocation The location from which to load the files and folders.
  */
 export function useAzureFileShare(currentLocation: string): [TreeElementModel[], boolean, boolean] {
-    const [isLoading, setIsLoading] = useState(false);
-    const [hasError, setHasError] = useState(false);
-    const [data, setData] = useState<TreeElementModel[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [hasError, setHasError] = React.useState(false);
+  const [data, setData] = React.useState<TreeElementModel[]>([]);
 
-    useEffect(() => {
-        let subscribed = true;
+  React.useEffect(() => {
+    let subscribed = true;
 
-        const fetchData = async () => {
-            setIsLoading(true);
+    const fetchData = async (): Promise<void> => {
+      setIsLoading(true);
 
-            try {
-                const response = await fetch(`/api${currentLocation}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (subscribed) {
-                        setData(data.map((d: ITreeElementModel) => TreeElementModel.create(d)));
-                    }
-                } else if (response.status === 401) {
-                    // Nullify the current user?
-                    setHasError(true);
-                } else {
-                    setHasError(true);
-                }
-            } catch (e) {
-                setHasError(true);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+      try {
+        const response = await fetch(`/api${currentLocation}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (subscribed) {
+            setData(data.map((d: ITreeElementModel) => TreeElementModel.create(d)));
+          }
+        } else if (response.status === 401) {
+          // Nullify the current user?
+          setHasError(true);
+        } else {
+          setHasError(true);
+        }
+      } catch (e) {
+        setHasError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-        fetchData();
+    fetchData();
 
-        return function cleanup() {
-            subscribed = false;
-        };
-    }, [currentLocation]);
+    return function cleanup(): void {
+      subscribed = false;
+    };
+  }, [currentLocation]);
 
-    return [data, isLoading, hasError];
+  return [data, isLoading, hasError];
 }

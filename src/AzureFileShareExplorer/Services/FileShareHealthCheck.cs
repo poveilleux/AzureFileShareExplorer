@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Storage.Files.Shares;
 using AzureFileShareExplorer.Settings;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,21 +23,14 @@ namespace AzureFileShareExplorer.Services
             _logger = logger;
         }
 
-        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken ct = default)
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             try
             {
-                if (!CloudStorageAccount.TryParse(Settings.ConnectionString, out CloudStorageAccount storageAccount))
-                {
-                    _logger.LogError("Connection string is invalid");
-                    return HealthCheckResult.Unhealthy();
-                }
+                _logger.LogDebug("Checking if file share {fileShare} exists...", Settings.ShareName);
 
-                CloudFileClient client = storageAccount.CreateCloudFileClient();
-                CloudFileShare fileShare = client.GetShareReference(Settings.ShareName);
-
-                _logger.LogDebug("Checking if file share {fileShare} exists", Settings.ShareName);
-                if (!await fileShare.ExistsAsync(ct))
+                var shareClient = new ShareClient(Settings.ConnectionString, Settings.ShareName);
+                if (await shareClient.ExistsAsync(cancellationToken))
                 {
                     _logger.LogError("File share {fileShare} does not exist", Settings.ShareName);
                     return HealthCheckResult.Unhealthy();

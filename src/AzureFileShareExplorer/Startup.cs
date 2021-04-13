@@ -1,18 +1,22 @@
-﻿using AzureFileShareExplorer.Extensions;
+﻿using AzureFileShareExplorer.Authorization;
+using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Services;
 using AzureFileShareExplorer.Settings;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
-using System;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -32,6 +36,9 @@ namespace AzureFileShareExplorer
 
             // Display PII when debugging.
             IdentityModelEventSource.ShowPII = Debugger.IsAttached;
+
+            // Does not apply claim mappings.
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -41,10 +48,18 @@ namespace AzureFileShareExplorer
             services.AddTransient<IStartupFilter, ConfigurationValidator>();
 
             services.ConfigureAndValidate<StorageSettings>(_configuration, StorageSettings.Name);
-            services.Configure<AzureAdSettings>(_configuration.GetSection(AzureAdSettings.Name));
+            services.ConfigureAndValidate<AuthorizationSettings>(_configuration, AuthorizationSettings.Name);
+            services.ConfigureAndValidate<OpenIdConnectSettings>(_configuration, OpenIdConnectSettings.Name);
 
-            services.AddAuthorization();
             AddAuthenticationServices(services);
+            services.AddAuthorization(options =>
+                {
+                    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .AddRequirements(new HasClaimRequirement())
+                        .Build();
+                })
+                .AddTransient<IAuthorizationHandler, HasClaimHandler>();
 
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -91,6 +106,30 @@ namespace AzureFileShareExplorer
                 endpoints.MapControllers();
             });
 
+            // Prevents users to access the SPA without proper authentication.
+            app.Use(async (context, next) =>
+            {
+                if (!context.User.IsAuthenticated())
+                {
+                    await context.ChallengeAsync();
+                    return;
+                }
+
+                var policyProvider = context.RequestServices.GetRequiredService<IAuthorizationPolicyProvider>();
+                var authorizationService = context.RequestServices.GetRequiredService<IAuthorizationService>();
+
+                AuthorizationPolicy defaultPolicy = await policyProvider.GetDefaultPolicyAsync();
+                AuthorizationResult authorizeResult = await authorizationService.AuthorizeAsync(context.User, defaultPolicy);
+                if (authorizeResult.Succeeded)
+                {
+                    await next();
+                    return;
+                }
+
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsync("Forbidden.");
+            });
+
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
@@ -107,10 +146,7 @@ namespace AzureFileShareExplorer
 
         private void AddAuthenticationServices(IServiceCollection services)
         {
-            var azureAdSettings = _configuration.GetSection(AzureAdSettings.Name);
-
-            if (!azureAdSettings.Get<AzureAdSettings>().Enabled)
-                return;
+            IConfigurationSection openIdSection = _configuration.GetSection(OpenIdConnectSettings.Name);
 
             services.AddAuthentication(options =>
             {
@@ -120,12 +156,13 @@ namespace AzureFileShareExplorer
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                azureAdSettings.Bind(options);
-                
-                options.Events.OnTicketReceived = context =>
+                openIdSection.Bind(options);
+
+                options.Events.OnTokenValidated = context =>
                 {
                     context.Properties.IsPersistent = true;
-                    context.Properties.ExpiresUtc = DateTime.UtcNow.AddHours(1);
+                    context.Properties.ExpiresUtc = context.SecurityToken.ValidTo;
+
                     return Task.CompletedTask;
                 };
             });
