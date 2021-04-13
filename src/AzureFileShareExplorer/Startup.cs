@@ -1,6 +1,7 @@
 ﻿using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Services;
 using AzureFileShareExplorer.Settings;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
-using System;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -41,7 +41,7 @@ namespace AzureFileShareExplorer
             services.AddTransient<IStartupFilter, ConfigurationValidator>();
 
             services.ConfigureAndValidate<StorageSettings>(_configuration, StorageSettings.Name);
-            services.Configure<AzureAdSettings>(_configuration.GetSection(AzureAdSettings.Name));
+            services.Configure<OpenIdConnectSettings>(_configuration.GetSection(OpenIdConnectSettings.Name));
 
             services.AddAuthorization();
             AddAuthenticationServices(services);
@@ -91,6 +91,18 @@ namespace AzureFileShareExplorer
                 endpoints.MapControllers();
             });
 
+            // Prevents users to access the SPA without proper authentication.
+            app.Use(async (context, next) =>
+            {
+                if (!context.User.IsAuthenticated())
+                {
+                    await context.ChallengeAsync();
+                    return;
+                }
+
+                await next();
+            });
+
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
@@ -107,10 +119,7 @@ namespace AzureFileShareExplorer
 
         private void AddAuthenticationServices(IServiceCollection services)
         {
-            var azureAdSection = _configuration.GetSection(AzureAdSettings.Name);
-
-            if (!azureAdSection.Get<AzureAdSettings>().Enabled)
-                return;
+            IConfigurationSection openIdSection = _configuration.GetSection(OpenIdConnectSettings.Name);
 
             services.AddAuthentication(options =>
             {
@@ -120,12 +129,13 @@ namespace AzureFileShareExplorer
             .AddCookie()
             .AddOpenIdConnect(options =>
             {
-                azureAdSection.Bind(options);
+                openIdSection.Bind(options);
 
-                options.Events.OnTicketReceived = context =>
+                options.Events.OnTokenValidated = context =>
                 {
                     context.Properties.IsPersistent = true;
-                    context.Properties.ExpiresUtc = DateTime.UtcNow.AddHours(1);
+                    context.Properties.ExpiresUtc = context.SecurityToken.ValidTo;
+
                     return Task.CompletedTask;
                 };
             });

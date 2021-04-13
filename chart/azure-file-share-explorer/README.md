@@ -11,7 +11,10 @@ To install the chart with the release name `my-release`, run:
 ```sh
 $ helm install azure-file-share-explorer --name my-release \
     --set secretValues.storage.connectionString="<connection-string>" \
-    --set secretValues.storage.shareName="<share-name>"
+    --set secretValues.storage.shareName="<share-name>" \
+    --set appsettings.openIdConnect.authority="<authority>" \
+    --set secretValues.openIdConnect.clientId="<client-id>" \
+    --set secretValues.openIdConnect.clientSecret="<client-secret>"
 ```
 
 To install the chart and secure the Azure File Share Explorer with Azure AD, run after having registered the application:
@@ -20,10 +23,9 @@ To install the chart and secure the Azure File Share Explorer with Azure AD, run
 $ helm install azure-file-share-explorer --name my-release \
     --set secretValues.storage.connectionString="<connection-string>" \
     --set secretValues.storage.shareName="<share-name>" \
-    --set appsettings.azureAd.enabled=true \
-    --set appsettings.azureAd.authority="https://login.microsoftonline.com/<tenantid>/v2.0" \
-    --set secretValues.azureAd.clientId="<app-client-id>" \
-    --set secretValues.azureAd.clientSecret="<app-client-secret>"
+    --set appsettings.openIdConnect.authority="https://login.microsoftonline.com/<tenantid>/v2.0" \
+    --set secretValues.openIdConnect.clientId="<app-client-id>" \
+    --set secretValues.openIdConnect.clientSecret="<app-client-secret>"
 ```
 
 ## Uninstalling the Chart
@@ -39,12 +41,10 @@ The following table lists the configurable parameters of the azure-file-share-ex
 | --- | --- | --- |
 | `secretValues.storage.connectionString` | none | Mandatory. Connection string to the Azure Storage account containing your file share. |
 | `secretValues.storage.shareName` | none | Mandatory. Name of the file share you want to explore. |
-| `secretValues.azureAd.clientId` | none | Client ID to use to authenticate with Azure Active Directory |
-| `secretValues.azureAd.clientSecret` | none | Client secret to use to authenticate with Azure Active Directory |
-| `appsettings.azureAd.enabled` | `false` | Whether if you want to use Azure Active Directory for authentication or not. |
-| `appsettings.azureAd.authority` | none | Authority URI to use to connect with Azure Active Directory. |
-| `appsettings.azureAd.getClaimsFromUserInfoEndpoint` | `true` | Whether to get the user claims from UserInfo endpoint or not. |
-| `appsettings.azureAd.tokenValidationParameters.validIssuers` | `[]` | List of valid issuers when validating tokens from Azure Active Directory. |
+| `secretValues.openIdConnect.clientId` | none | Mandatory. Client ID to use to authenticate with the OpenID Connect authority |
+| `secretValues.openIdConnect.clientSecret` | none | Mandatory. Client secret to use to authenticate with the OpenID Connect authority |
+| `appsettings.openIdConnect.authority` | none | Mandatory. Authority URI to use to connect with the OpenID Connect server. |
+| `appsettings.openIdConnect.getClaimsFromUserInfoEndpoint` | `true` | Whether to get the user claims from UserInfo endpoint or not. |
 | `image.repository` | `azure-file-share-explorer` | Container image name. |
 | `image.tag` | `0.0.3-beta` | Container image tag. |
 | `image.pullPolicy ` | `IfNotPresent` | Container pull policy. |
