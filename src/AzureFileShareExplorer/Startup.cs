@@ -1,11 +1,14 @@
-﻿using AzureFileShareExplorer.Extensions;
+﻿using AzureFileShareExplorer.Authorization;
+using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Services;
 using AzureFileShareExplorer.Settings;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -32,6 +36,9 @@ namespace AzureFileShareExplorer
 
             // Display PII when debugging.
             IdentityModelEventSource.ShowPII = Debugger.IsAttached;
+
+            // Does not apply claim mappings.
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -41,10 +48,18 @@ namespace AzureFileShareExplorer
             services.AddTransient<IStartupFilter, ConfigurationValidator>();
 
             services.ConfigureAndValidate<StorageSettings>(_configuration, StorageSettings.Name);
-            services.Configure<OpenIdConnectSettings>(_configuration.GetSection(OpenIdConnectSettings.Name));
+            services.ConfigureAndValidate<AuthorizationSettings>(_configuration, AuthorizationSettings.Name);
+            services.ConfigureAndValidate<OpenIdConnectSettings>(_configuration, OpenIdConnectSettings.Name);
 
-            services.AddAuthorization();
             AddAuthenticationServices(services);
+            services.AddAuthorization(options =>
+                {
+                    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .AddRequirements(new HasClaimRequirement())
+                        .Build();
+                })
+                .AddTransient<IAuthorizationHandler, HasClaimHandler>();
 
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -100,7 +115,19 @@ namespace AzureFileShareExplorer
                     return;
                 }
 
-                await next();
+                var policyProvider = context.RequestServices.GetRequiredService<IAuthorizationPolicyProvider>();
+                var authorizationService = context.RequestServices.GetRequiredService<IAuthorizationService>();
+
+                AuthorizationPolicy defaultPolicy = await policyProvider.GetDefaultPolicyAsync();
+                AuthorizationResult authorizeResult = await authorizationService.AuthorizeAsync(context.User, defaultPolicy);
+                if (authorizeResult.Succeeded)
+                {
+                    await next();
+                    return;
+                }
+
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsync("Forbidden.");
             });
 
             app.UseStaticFiles();

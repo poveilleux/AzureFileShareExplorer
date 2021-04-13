@@ -1,6 +1,7 @@
 ﻿using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Models;
 using AzureFileShareExplorer.Settings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Azure.Storage;
@@ -16,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace AzureFileShareExplorer.Controllers
 {
+    [Authorize]
     [Route("api")]
     public class FilesController : Controller
     {

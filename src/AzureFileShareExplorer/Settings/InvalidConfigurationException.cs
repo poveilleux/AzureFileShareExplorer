@@ -6,6 +6,6 @@ namespace AzureFileShareExplorer.Settings
     public class InvalidConfigurationException : Exception
     {
         public InvalidConfigurationException(ICollection<string> errors)
-            :base($"Some configuration are not valid: {string.Join(Environment.NewLine, errors)}") { }
+            :base($"Some configuration are not valid:{Environment.NewLine} {string.Join(Environment.NewLine, errors)}") { }
     }
 }
