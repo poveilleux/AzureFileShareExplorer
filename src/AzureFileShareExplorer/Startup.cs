@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using System;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -119,10 +120,11 @@ namespace AzureFileShareExplorer
             {
                 openIdSection.Bind(options);
 
-                options.Events.OnTicketReceived = context =>
+                options.Events.OnTokenValidated = context =>
                 {
                     context.Properties.IsPersistent = true;
-                    context.Properties.ExpiresUtc = DateTime.UtcNow.AddHours(1);
+                    context.Properties.ExpiresUtc = context.SecurityToken.ValidTo;
+
                     return Task.CompletedTask;
                 };
             });
