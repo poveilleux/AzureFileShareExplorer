@@ -1,11 +1,29 @@
 parameters:
-  containerRegistryServiceConnection:
-  repository:
-  pushCondition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
-  imageTag:
-  dockerfile: $(Build.SourcesDirectory)/Dockerfile
-  publicUrl: ""
-  artifactPath: $(Build.ArtifactStagingDirectory)
+- name: containerRegistryServiceConnection
+  displayName: The container registry connection used to push the image
+  type: string
+- name: repository
+  displayName: The name of the repository where to push the image
+  type: string
+- name: imageTag
+  displayName: The image tag of the image
+  type: string
+- name: pushCondition
+  displayName: When to push the image to the container registry and when not to.
+  type: string
+  default: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+- name: dockerfile
+  displayName: Path to the Dockerfile
+  type: string
+  default: $(Build.SourcesDirectory)/Dockerfile
+- name: artifactPath
+  displayName: Path where output the artifacts
+  type: string
+  default: $(Build.ArtifactStagingDirectory)
+- name: publicUrl
+  displayName: Public URL to set for the React app
+  type: string
+  default: ""
 
 steps:
 - task: Docker@2
