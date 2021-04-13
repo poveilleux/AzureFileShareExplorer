@@ -6,9 +6,9 @@
 
         public string Name { get; }
 
-        public string ContentType { get; }
+        public string? ContentType { get; }
 
-        private TreeElementModel(TreeElementType type, string name, string contentType = null)
+        private TreeElementModel(TreeElementType type, string name, string? contentType = null)
         {
             Type = type;
             Name = name;

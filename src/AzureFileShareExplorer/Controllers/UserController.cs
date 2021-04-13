@@ -1,4 +1,5 @@
-﻿using AzureFileShareExplorer.Models;
+﻿using AzureFileShareExplorer.Extensions;
+using AzureFileShareExplorer.Models;
 using AzureFileShareExplorer.Settings;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ namespace AzureFileShareExplorer.Controllers
                 return Ok(new UserModel { IsAuthenticated = true });
             }
 
-            if (!User.Identity.IsAuthenticated)
+            if (!User.IsAuthenticated())
             {
                 return Ok(new UserModel { IsAuthenticated = false });
             }
@@ -35,7 +36,7 @@ namespace AzureFileShareExplorer.Controllers
             return Ok(new UserModel
             {
                 IsAuthenticated = true,
-                Name = User.Identity.Name
+                Name = User.GetDisplayName()
             });
         }
 
@@ -54,7 +55,7 @@ namespace AzureFileShareExplorer.Controllers
         }
 
         [HttpGet("signout")]
-        public async Task<IActionResult> SignOut()
+        public async Task<IActionResult> EndSession()
         {
             await HttpContext.SignOutAsync();
             return Ok();

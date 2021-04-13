@@ -1,4 +1,5 @@
-﻿using AzureFileShareExplorer.Models;
+﻿using AzureFileShareExplorer.Extensions;
+using AzureFileShareExplorer.Models;
 using AzureFileShareExplorer.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -7,6 +8,7 @@ using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -34,7 +36,7 @@ namespace AzureFileShareExplorer.Controllers
         [HttpGet("{*queryvalues}")]
         public async Task<IActionResult> GetFiles(string queryValues, [FromQuery] bool? download)
         {
-            if (AzureAdSettings.Enabled && !User.Identity.IsAuthenticated)
+            if (AzureAdSettings.Enabled && !User.IsAuthenticated())
             {
                 return Unauthorized();
             }
@@ -46,19 +48,19 @@ namespace AzureFileShareExplorer.Controllers
             string[] segments = queryValues.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
             CloudFileDirectory currentDir = cloudFleShare.GetRootDirectoryReference();
-            var items = currentDir.ListFilesAndDirectories().ToList();
+            List<IListFileItem> items = currentDir.ListFilesAndDirectories().ToList();
 
             for (int i = 0; i < segments.Length; ++i)
             {
                 string itemName = segments[i];
 
-                CloudFileDirectory newDir = items.OfType<CloudFileDirectory>().FirstOrDefault(x => x.Name == itemName);
+                CloudFileDirectory? newDir = items.OfType<CloudFileDirectory>().FirstOrDefault(x => x.Name == itemName);
                 if (newDir is null)
                 {
                     // We only process the item as a file if it's the last segment.
                     if (i == segments.Length - 1)
                     {
-                        CloudFile file = items.OfType<CloudFile>().FirstOrDefault(x => x.Name == itemName);
+                        CloudFile? file = items.OfType<CloudFile>().FirstOrDefault(x => x.Name == itemName);
                         if (file is null)
                         {
                             return NotFound($"No file or directory {itemName} was not found under {currentDir.Name}");
@@ -86,7 +88,7 @@ namespace AzureFileShareExplorer.Controllers
 
         private CloudFileShare GetFileShare(string shareName)
         {
-            var cloudStorageAccount = CloudStorageAccount.Parse(StorageSettings.ConnectionString);
+            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(StorageSettings.ConnectionString);
             CloudFileClient client = cloudStorageAccount.CreateCloudFileClient();
             return client.GetShareReference(shareName);
         }

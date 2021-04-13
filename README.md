@@ -5,9 +5,9 @@ Easily explore your Azure File shares with the Azure File Share Explorer.
 The Docker image is available on [Docker Hub](https://hub.docker.com/repository/docker/poveilleux/azure-file-share-explorer).
 
 ## Install
-1. [Install .NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1), if not already installed
+1. [Install .NET Core 5.0](https://dotnet.microsoft.com/download) if not already installed.
 
-2. [Install node](https://nodejs.org/en/), if not already installed. This application has been tested with Node 10.16.0 and npm 6.9.0
+2. [Install NodeJS](https://nodejs.org/en/) latest LTS if not already installed. This application has been tested with Node 10.16.0 and npm 6.9.0.
 
 3. Clone this repository
    ```
@@ -17,7 +17,7 @@ The Docker image is available on [Docker Hub](https://hub.docker.com/repository/
 ## Running
 1. Open using Visual Studio 2019 (Visual Studio Code support coming soon!)
 
-2. Before running for the first time, you will need to edit the [user secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.0&tabs=windows) of the AzureFileShareExplorer project. You can use either of the following formats
+2. Before running for the first time, you will need to edit the [user secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-5.0&tabs=windows) of the AzureFileShareExplorer project. You can use either of the following formats
    ```json
    {
      "Storage": {
