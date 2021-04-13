@@ -20,7 +20,7 @@ namespace AzureFileShareExplorer.Settings
         {
             var errorMessages = new List<string>();
 
-            foreach (var validatableConfiguration in _validatableConfigurations)
+            foreach (IValidatableObject validatableConfiguration in _validatableConfigurations)
             {
                 var context = new ValidationContext(validatableConfiguration, serviceProvider: null, items: null);
                 var results = new List<ValidationResult>();

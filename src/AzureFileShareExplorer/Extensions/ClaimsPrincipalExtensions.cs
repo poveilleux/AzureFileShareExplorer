@@ -7,12 +7,20 @@ namespace AzureFileShareExplorer.Extensions
     {
         public static bool IsAuthenticated(this ClaimsPrincipal principal)
         {
-            if (principal is null) throw new ArgumentNullException(nameof(principal));
+            if (principal is null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+
             return principal.Identity?.IsAuthenticated ?? false;
         }
         public static string GetDisplayName(this ClaimsPrincipal principal)
         {
-            if (principal is null) throw new ArgumentNullException(nameof(principal));
+            if (principal is null)
+            {
+                throw new ArgumentNullException(nameof(principal));
+            }
+
             return principal.Identity?.Name ?? string.Empty;
         }
     }

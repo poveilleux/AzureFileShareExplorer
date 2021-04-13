@@ -8,6 +8,7 @@ using Microsoft.Azure.Storage.File;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -47,7 +48,7 @@ namespace AzureFileShareExplorer.Controllers
             string[] segments = queryValues.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
             CloudFileDirectory currentDir = cloudFleShare.GetRootDirectoryReference();
-            var items = currentDir.ListFilesAndDirectories().ToList();
+            List<IListFileItem> items = currentDir.ListFilesAndDirectories().ToList();
 
             for (int i = 0; i < segments.Length; ++i)
             {
@@ -87,7 +88,7 @@ namespace AzureFileShareExplorer.Controllers
 
         private CloudFileShare GetFileShare(string shareName)
         {
-            var cloudStorageAccount = CloudStorageAccount.Parse(StorageSettings.ConnectionString);
+            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(StorageSettings.ConnectionString);
             CloudFileClient client = cloudStorageAccount.CreateCloudFileClient();
             return client.GetShareReference(shareName);
         }
