@@ -31,12 +31,6 @@ function displayLoading(): JSX.Element {
   );
 }
 
-function getFilePath(currentLocation: string, file: FileElementModel | null, download?: boolean): string {
-  return file
-    ? `${process.env.PUBLIC_URL}/api${currentLocation}/${file.name}${download ? "?download=true" : ""}`
-    : "";
-}
-
 const FileExplorer: React.FC = () => {
   const { history, location } = useReactRouter();
   const [isImageViewerVisible, setIsImageViewerVisible] = React.useState(false);
@@ -48,7 +42,7 @@ const FileExplorer: React.FC = () => {
 
   const images = data
     .filter(x => x.isFile() && (x as FileElementModel).isImage())
-    .map(x => ({ src: getFilePath(currentLocation, x as FileElementModel), alt: x.name }));
+    .map(file => ({ src: file.uri, alt: file.name }));
 
   function onOpenElement(element: TreeElementModel) {
     if (element.isFolder()) {
@@ -63,7 +57,7 @@ const FileExplorer: React.FC = () => {
       } else if (file.isText()) {
         setActiveFile(file);
       } else {
-        downloadFile(getFilePath(currentLocation, file, true), file.name);
+        downloadFile(`${file.uri}?download=true`, file.name);
       }
     }
   }
@@ -92,7 +86,7 @@ const FileExplorer: React.FC = () => {
         images={images} />
 
       <FileViewer
-        url={getFilePath(currentLocation, activeFile)}
+        url={activeFile?.uri ?? ""}
         onHide={() => setActiveFile(null)} />
     </div>
   );
