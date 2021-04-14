@@ -1,4 +1,6 @@
-﻿namespace AzureFileShareExplorer.Models
+﻿using System;
+
+namespace AzureFileShareExplorer.Models
 {
     public class TreeElementModel
     {
@@ -8,21 +10,24 @@
 
         public string? ContentType { get; }
 
-        private TreeElementModel(TreeElementType type, string name, string? contentType = null)
+        public Uri Uri { get; }
+
+        private TreeElementModel(TreeElementType type, string name, Uri uri, string? contentType = null)
         {
             Type = type;
             Name = name;
+            Uri = uri;
             ContentType = contentType;
         }
 
-        public static TreeElementModel NewFolder(string name)
+        public static TreeElementModel NewFolder(string name, Uri uri)
         {
-            return new TreeElementModel(TreeElementType.Folder, name);
+            return new TreeElementModel(TreeElementType.Folder, name, uri);
         }
 
-        public static TreeElementModel NewFile(string name, string contentType)
+        public static TreeElementModel NewFile(string name, Uri uri, string contentType)
         {
-            return new TreeElementModel(TreeElementType.File, name, contentType);
+            return new TreeElementModel(TreeElementType.File, name, uri, contentType);
         }
     }
 }

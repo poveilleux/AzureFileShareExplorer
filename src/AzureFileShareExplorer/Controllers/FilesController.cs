@@ -4,6 +4,7 @@ using AzureFileShareExplorer.Extensions;
 using AzureFileShareExplorer.Models;
 using AzureFileShareExplorer.Settings;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
@@ -84,11 +85,14 @@ namespace AzureFileShareExplorer.Controllers
                 .ThenBy(x => x.Name));
         }
 
-        private static TreeElementModel Convert(ShareFileItem item)
+        private TreeElementModel Convert(ShareFileItem item)
         {
+            string requestUrl = HttpContext.Request.GetDisplayUrl().TrimEnd('/');
+            var itemUri = new Uri($"{requestUrl}/{item.Name}");
+
             return item.IsDirectory
-                ? TreeElementModel.NewFolder(item.Name)
-                : TreeElementModel.NewFile(item.Name, GetContentType(item.Name));
+                ? TreeElementModel.NewFolder(item.Name, itemUri)
+                : TreeElementModel.NewFile(item.Name, itemUri, GetContentType(item.Name));
         }
 
         private static string GetContentType(string fileName)
