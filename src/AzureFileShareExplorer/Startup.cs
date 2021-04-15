@@ -80,8 +80,8 @@ namespace AzureFileShareExplorer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder rootApp)
         {
-            var pathBase = _configuration.GetValue<string>(ValueSettings.PathBase);
-            rootApp.Map(pathBase, app =>
+            var applicationPath = _configuration.GetValue<string>(ValueSettings.ApplicationPath);
+            rootApp.Map(applicationPath, app =>
             {
                 app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {
@@ -140,10 +140,10 @@ namespace AzureFileShareExplorer
                 {
                     spa.Options.SourcePath = "ClientApp";
 
-                // if (_environment.IsDevelopment())
-                // {
-                //     spa.UseReactDevelopmentServer(npmScript: "start");
-                // }
+                    if (_environment.IsDevelopment())
+                    {
+                        spa.UseReactDevelopmentServer(npmScript: "start");
+                    }
                 });
             });
         }

@@ -19,7 +19,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "cross-env PUBLIC_URL=/zeshare react-scripts build",
+    "build": "react-scripts build",
+    "build-with-path": "cross-env PUBLIC_URL=/share react-scripts build",
     "lint": "eslint src/**/*.ts src/**/*.tsx",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
