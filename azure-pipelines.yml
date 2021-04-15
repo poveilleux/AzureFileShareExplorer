@@ -17,7 +17,7 @@ parameters:
   default: false
 
 variables:
-  Version: 0.0.1
+  Version: 1.0.0
   IsMaster: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
 
 jobs:  
