@@ -60,7 +60,7 @@ namespace AzureFileShareExplorer.Services
             await context.Response.WriteAsync("Forbidden.");
         }
 
-        private IEnumerable<string> GetFailedRequirements(AuthorizationResult authorizeResult)
+        private static IEnumerable<string> GetFailedRequirements(AuthorizationResult authorizeResult)
         {
             if (authorizeResult.Failure is null)
             {
