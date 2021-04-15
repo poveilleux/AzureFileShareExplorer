@@ -6,17 +6,18 @@ export enum ElementType {
 export interface ITreeElementModel {
     type: string;
     name: string;
+    uri: string;
     contentType: string;
 }
 
 export abstract class TreeElementModel {
-  constructor(public type: ElementType, public name: string) { }
+  constructor(public type: ElementType, public name: string, public uri: string) { }
 
   static create(e: ITreeElementModel): TreeElementModel {
     if (e.type === ElementType.Folder)
-      return new FolderElementModel(e.name);
+      return new FolderElementModel(e.name, e.uri);
     else
-      return new FileElementModel(e.name, e.contentType);
+      return new FileElementModel(e.name, e.uri, e.contentType);
   }
 
   public isFolder(): boolean {
@@ -29,14 +30,14 @@ export abstract class TreeElementModel {
 }
 
 export class FolderElementModel extends TreeElementModel {
-  constructor(name: string) {
-    super(ElementType.Folder, name);
+  constructor(name: string, uri: string) {
+    super(ElementType.Folder, name, uri);
   }
 }
 
 export class FileElementModel extends TreeElementModel {
-  constructor(name: string, public contentType: string) {
-    super(ElementType.File, name);
+  constructor(name: string, uri: string, public contentType: string) {
+    super(ElementType.File, name, uri);
   }
 
   public isImage(): boolean {
