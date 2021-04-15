@@ -140,7 +140,8 @@ namespace AzureFileShareExplorer
                 {
                     spa.Options.SourcePath = "ClientApp";
 
-                    if (_environment.IsDevelopment())
+                    var spaSettings = _configuration.GetSection(SpaSettings.Name).Get<SpaSettings>();
+                    if (spaSettings.UseDevelopementServer)
                     {
                         spa.UseReactDevelopmentServer(npmScript: "start");
                     }
