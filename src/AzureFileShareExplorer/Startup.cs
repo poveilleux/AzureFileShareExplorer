@@ -109,29 +109,7 @@ namespace AzureFileShareExplorer
                     endpoints.MapControllers();
                 });
 
-                // Prevents users to access the SPA without proper authentication.
-                app.Use(async (context, next) =>
-                {
-                    if (!context.User.IsAuthenticated())
-                    {
-                        await context.ChallengeAsync();
-                        return;
-                    }
-
-                    var policyProvider = context.RequestServices.GetRequiredService<IAuthorizationPolicyProvider>();
-                    var authorizationService = context.RequestServices.GetRequiredService<IAuthorizationService>();
-
-                    AuthorizationPolicy defaultPolicy = await policyProvider.GetDefaultPolicyAsync();
-                    AuthorizationResult authorizeResult = await authorizationService.AuthorizeAsync(context.User, defaultPolicy);
-                    if (authorizeResult.Succeeded)
-                    {
-                        await next();
-                        return;
-                    }
-
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    await context.Response.WriteAsync("Forbidden.");
-                });
+                app.UseSpaAuthentication();
 
                 app.UseStaticFiles();
                 app.UseSpaStaticFiles();
