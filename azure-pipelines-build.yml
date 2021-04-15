@@ -46,8 +46,7 @@ steps:
     tags: ${{ parameters.imageTag }}
 
 - script: |
-    helm init --client-only
-    helm package azure-file-share-explorer --destination ${{ parameters.artifactPath }} --app-version ${{ parameters.imageTag }}
+    helm package azure-file-share-explorer --destination ${{ parameters.artifactPath }}
   displayName: Package helm chart
   workingDirectory: chart/
 
